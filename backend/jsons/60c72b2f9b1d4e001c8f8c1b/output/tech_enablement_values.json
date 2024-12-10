@@ -1,773 +1,267 @@
 [
-  {
-    "title": "CustomerServiceEnhancer - Customer Service Delivery",
-    "description": "AI-driven chatbots and voice-bots to enhance customer service by providing instant responses and personalized interactions.",
-    "defaultInfo": [
-      {
-        "icon": "\ud83e\uddf9",
-        "title": "Linked AI Value",
-        "options": [
+    {
+      "title": "Operational Efficiency",
+      "defaultInfo": [
+        { "icon": "📊", "title": "Type Of Use", "options": [{"value": "Everyday", "selected":true}, {"value": "Augment", "selected":false}, {"value": "Transform", "selected":false}] },
+        { "icon": "🧹", "title": "Type Of App", "options": [{"value": "Content", "selected":false}, {"value": "Delivery", "selected":false}, {"value": "Triage", "selected":true}] },
+        { "icon": "🔒", "title": "Quadrant Mapping", "options": [{"value": "Quadrant-1", "selected":false}, {"value": "Quadrant-2", "selected":true}, {"value": "Quadrant-3", "selected": false}] }
+      ],
+      "questions": [
+        {
+          "id": "dataVolume",
+          "label": "What do you think is the volume of data the organization has available for this application?",
+          "options": [
+            { "value": "extensive", "label": "Extensive data (petabytes or more)" },
+            { "value": "large", "label": "Large data volume (terabytes)" },
+            { "value": "moderate", "label": "Moderate data volume (gigabytes)" },
+            { "value": "small", "label": "Small but manageable data volume (megabytes)" },
+            { "value": "limited", "label": "Limited data availability (kilobytes or less)" }
+          ]
+        },
+        {
+          "id": "dataQuality",
+          "label": "What do you think is the quality of data the organization has available?",
+          "options": [
+            { "value": "high", "label": "High quality, well-curated data" },
+            { "value": "good", "label": "Good quality with minor inconsistencies" },
+            { "value": "average", "label": "Average quality, requires some cleaning" },
+            { "value": "low", "label": "Poor quality, significant preprocessing needed" }
+          ]
+        },
+        {
+            "id": "dataSensitivity",
+            "label": "What do you think is the sensitivity of the data that will be used?",
+            "options": [
+              { "value": "high", "label": " Highly sensitive (e.g., personally identifiable information)" },
+              { "value": "good", "label": "Generally sensitive (e.g., financial records)" },
+              { "value": "average", "label": "Moderately sensitive(e.g., internal business documents)" },
+              { "value": "low", "label": "Low sensitive (e.g., public-facing content)" },
+              { "value": "not", "label": "Not sensitive (e.g., anonymized or aggregated data)" }
+            ]
+          },
           {
-            "value": "Customer Value",
-            "selected": true
+            "id": "accuracyTolerance",
+            "label": "What is the accuracy tolerance for the application's output for this use case?",
+            "options": [
+              { "value": "high", "label": "Zero tolerance for errors (critical systems)" },
+              { "value": "good", "label": "Very high accuracy required (above 95%)" },
+              { "value": "average", "label": "Moderate accuracy required (80-95%)" },
+              { "value": "low", "label": "Some tolerance for inaccuracies (60-80%)" },
+              { "value": "not", "label": "High tolerance for inaccuracies (below 60%)" }
+            ]
           }
-        ]
-      },
-      {
-        "icon": "\ud83d\udcca",
-        "title": "AI Responsiible Use",
-        "options": [
-          {
-            "value": "Everyday use",
-            "selected": false
-          },
-          {
-            "value": "Augmentation",
-            "selected": true
-          },
-          {
-            "value": "Transformation",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "icon": "\ud83d\udd12",
-        "title": "Quadrant Mapping",
-        "options": [
-          {
-            "value": "Quadrant-1",
-            "selected": false
-          },
-          {
-            "value": "Quadrant-2",
-            "selected": true
-          },
-          {
-            "value": "Quadrant-3",
-            "selected": false
-          },
-          {
-            "value": "Quadrant-4",
-            "selected": false
-          }
-        ]
-      }
-    ],
-    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized tool designed to augment the customer service process with AI capabilities, tailored to enhance customer interactions and provide personalized service.",
-    "questions": [
-      {
-        "id": "aiUsageInTeam",
-        "label": "how widely AI is used in your current team today?",
-        "options": [
-          {
-            "value": "Extensively",
-            "label": "AI is deeply embedded in our workflows, driving automation, analytics, and decision-making processes.",
-            "selected": false
-          },
-          {
-            "value": "Moderately",
-            "label": "AI is utilized in several critical functions, enhancing efficiency and providing data-driven insights.",
-            "selected": false
-          },
-          {
-            "value": "Sparingly",
-            "label": "AI is applied in a limited number of specific tasks or experimental projects.",
-            "selected": false
-          },
-          {
-            "value": "Not at all",
-            "label": "AI has not yet been integrated into our team's operations.",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "dataVolume",
-        "label": "What do you think is the volume of data the organization has available for this application?",
-        "options": [
-          {
-            "value": "extensive",
-            "label": "Extensive data (petabytes or more)",
-            "selected": false
-          },
-          {
-            "value": "large",
-            "label": "Large data volume (terabytes)",
-            "selected": false
-          },
-          {
-            "value": "moderate",
-            "label": "Moderate data volume (gigabytes)",
-            "selected": false
-          },
-          {
-            "value": "small",
-            "label": "Small but manageable data volume (megabytes)",
-            "selected": false
-          },
-          {
-            "value": "limited",
-            "label": "Limited data availability (kilobytes or less)",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "dataQuality",
-        "label": "What do you think is the quality of data the organization has available?",
-        "options": [
-          {
-            "value": "high",
-            "label": "High quality, well-curated data",
-            "selected": false
-          },
-          {
-            "value": "good",
-            "label": "Good quality with minor inconsistencies",
-            "selected": false
-          },
-          {
-            "value": "average",
-            "label": "Average quality, requires some cleaning",
-            "selected": false
-          },
-          {
-            "value": "low",
-            "label": "Poor quality, significant preprocessing needed",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "dataSensitivity",
-        "label": "What do you think is the sensitivity of the data that will be used?",
-        "options": [
-          {
-            "value": "high",
-            "label": " Highly sensitive (e.g., personally identifiable information)",
-            "selected": false
-          },
-          {
-            "value": "good",
-            "label": "Generally sensitive (e.g., financial records)",
-            "selected": false
-          },
-          {
-            "value": "average",
-            "label": "Moderately sensitive(e.g., internal business documents)",
-            "selected": false
-          },
-          {
-            "value": "low",
-            "label": "Low sensitive (e.g., public-facing content)",
-            "selected": false
-          },
-          {
-            "value": "not",
-            "label": "Not sensitive (e.g., anonymized or aggregated data)",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "accuracyTolerance",
-        "label": "What is the accuracy tolerance for the application's output for this use case?",
-        "options": [
-          {
-            "value": "high",
-            "label": "Zero tolerance for errors (critical systems)",
-            "selected": false
-          },
-          {
-            "value": "good",
-            "label": "Very high accuracy required (above 95%)",
-            "selected": false
-          },
-          {
-            "value": "average",
-            "label": "Moderate accuracy required (80-95%)",
-            "selected": false
-          },
-          {
-            "value": "low",
-            "label": "Some tolerance for inaccuracies (60-80%)",
-            "selected": false
-          },
-          {
-            "value": "not",
-            "label": "High tolerance for inaccuracies (below 60%)",
-            "selected": false
-          }
+      ]
+    },
+    {
+        "title": "Customer value",
+        "defaultInfo": [
+          { "icon": "📊", "title": "Type Of Use", "options": [{"value": "Everyday", "selected":true}, {"value": "Augment", "selected":false}, {"value": "Transform", "selected":false}] },
+          { "icon": "🧹", "title": "Type Of App", "options": [{"value": "Content", "selected":false}, {"value": "Delivery", "selected":false}, {"value": "Triage", "selected":true}] },
+          { "icon": "🔒", "title": "Quadrant Mapping", "options": [{"value": "Quadrant-1", "selected":false}, {"value": "Quadrant-2", "selected":true}, {"value": "Quadrant-3", "selected": false}] }
         ],
-        "explanation": "Would this use be considered pricing, underwriting, claims & fraud decisioning, reserving, employee decisions or audit or assurance? If yes, then it needs to be accurate / may carry higher risk."
-      },
-      {
-        "id": "coreDataUsage",
-        "label": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
-        "options": [
+        "questions": [
           {
-            "value": "1",
-            "label": "It is core to one of these operations",
-            "selected": false
+            "id": "dataVolume",
+            "label": "What do you think is the volume of data the organization has available for this application?",
+            "options": [
+              { "value": "extensive", "label": "Extensive data (petabytes or more)", "selected":false },
+              { "value": "large", "label": "Large data volume (terabytes)", "selected":false },
+              { "value": "moderate", "label": "Moderate data volume (gigabytes)", "selected":false },
+              { "value": "small", "label": "Small but manageable data volume (megabytes)", "selected":false },
+              { "value": "limited", "label": "Limited data availability (kilobytes or less)", "selected":false }
+            ]
           },
           {
-            "value": "2",
-            "label": "It is core to two of these operations.",
-            "selected": false
+            "id": "dataQuality",
+            "label": "What do you think is the quality of data the organization has available?",
+            "options": [
+              { "value": "high", "label": "High quality, well-curated data", "selected":false },
+              { "value": "good", "label": "Good quality with minor inconsistencies", "selected":false },
+              { "value": "average", "label": "Average quality, requires some cleaning", "selected":false },
+              { "value": "low", "label": "Poor quality, significant preprocessing needed", "selected":false }
+            ]
           },
           {
-            "value": "3",
-            "label": "It is core all of these operations.",
-            "selected": false
-          },
-          {
-            "value": "No",
-            "label": "It is not core to any of these operations.",
-            "selected": false
-          }
+              "id": "dataSensitivity",
+              "label": "What do you think is the sensitivity of the data that will be used?",
+              "options": [
+                { "value": "high", "label": " Highly sensitive (e.g., personally identifiable information)", "selected":false },
+                { "value": "good", "label": "Generally sensitive (e.g., financial records)", "selected":false },
+                { "value": "average", "label": "Moderately sensitive(e.g., internal business documents)", "selected":false },
+                { "value": "low", "label": "Low sensitive (e.g., public-facing content)", "selected":false },
+                { "value": "not", "label": "Not sensitive (e.g., anonymized or aggregated data)", "selected":false }
+              ]
+            },
+            {
+              "id": "accuracyTolerance",
+              "label": "What is the accuracy tolerance for the application's output for this use case?",
+              "options": [
+                { "value": "high", "label": "Zero tolerance for errors (critical systems)", "selected":false },
+                { "value": "good", "label": "Very high accuracy required (above 95%)", "selected":false },
+                { "value": "average", "label": "Moderate accuracy required (80-95%)", "selected":false },
+                { "value": "low", "label": "Some tolerance for inaccuracies (60-80%)", "selected":false},
+                { "value": "not", "label": "High tolerance for inaccuracies (below 60%)", "selected":false }
+              ]
+            }
         ]
       },
       {
-        "id": "businessVertical",
-        "label": "Which segment would you consider your business vertical to be most closely aligned to ?",
-        "options": [
-          {
-            "value": "Core Insurance",
-            "label": "Core Insurance",
-            "selected": false
-          },
-          {
-            "value": "Marketing, Digital, Customer Experience",
-            "label": "Marketing, Digital, Customer Experience",
-            "selected": false
-          },
-          {
-            "value": "People & Finance, Operations, Risk",
-            "label": "People & Finance, Operations, Risk",
-            "selected": false
-          },
-          {
-            "value": "Tech & Legal",
-            "label": "Tech & Legal",
-            "selected": false
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "ClaimsDecisionAI - End-to-End Decisioning",
-    "description": "AI-powered end-to-end decisioning systems for handling claims and fraud cases, providing faster and more accurate resolutions.",
-    "defaultInfo": [
-      {
-        "icon": "\ud83e\uddf9",
-        "title": "Linked AI Value",
-        "options": [
-          {
-            "value": "Competitive Advantage",
-            "selected": true
-          }
-        ]
-      },
-      {
-        "icon": "\ud83d\udcca",
-        "title": "AI Responsiible Use",
-        "options": [
-          {
-            "value": "Everyday use",
-            "selected": false
-          },
-          {
-            "value": "Augmentation",
-            "selected": false
-          },
-          {
-            "value": "Transformation",
-            "selected": true
-          }
-        ]
-      },
-      {
-        "icon": "\ud83d\udd12",
-        "title": "Quadrant Mapping",
-        "options": [
-          {
-            "value": "Quadrant-1",
-            "selected": false
-          },
-          {
-            "value": "Quadrant-2",
-            "selected": false
-          },
-          {
-            "value": "Quadrant-3",
-            "selected": false
-          },
-          {
-            "value": "Quadrant-4",
-            "selected": true
-          }
-        ]
-      }
-    ],
-    "quadrant_reasoning": "This application falls into Quadrant 4 as it requires the development of specialized, industry-specific AI solutions that handle high-risk and complex processes, such as claims and fraud decisioning in the insurance industry.",
-    "questions": [
-      {
-        "id": "aiUsageInTeam",
-        "label": "how widely AI is used in your current team today?",
-        "options": [
-          {
-            "value": "Extensively",
-            "label": "AI is deeply embedded in our workflows, driving automation, analytics, and decision-making processes.",
-            "selected": false
-          },
-          {
-            "value": "Moderately",
-            "label": "AI is utilized in several critical functions, enhancing efficiency and providing data-driven insights.",
-            "selected": false
-          },
-          {
-            "value": "Sparingly",
-            "label": "AI is applied in a limited number of specific tasks or experimental projects.",
-            "selected": false
-          },
-          {
-            "value": "Not at all",
-            "label": "AI has not yet been integrated into our team's operations.",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "dataVolume",
-        "label": "What do you think is the volume of data the organization has available for this application?",
-        "options": [
-          {
-            "value": "extensive",
-            "label": "Extensive data (petabytes or more)",
-            "selected": false
-          },
-          {
-            "value": "large",
-            "label": "Large data volume (terabytes)",
-            "selected": false
-          },
-          {
-            "value": "moderate",
-            "label": "Moderate data volume (gigabytes)",
-            "selected": false
-          },
-          {
-            "value": "small",
-            "label": "Small but manageable data volume (megabytes)",
-            "selected": false
-          },
-          {
-            "value": "limited",
-            "label": "Limited data availability (kilobytes or less)",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "dataQuality",
-        "label": "What do you think is the quality of data the organization has available?",
-        "options": [
-          {
-            "value": "high",
-            "label": "High quality, well-curated data",
-            "selected": false
-          },
-          {
-            "value": "good",
-            "label": "Good quality with minor inconsistencies",
-            "selected": false
-          },
-          {
-            "value": "average",
-            "label": "Average quality, requires some cleaning",
-            "selected": false
-          },
-          {
-            "value": "low",
-            "label": "Poor quality, significant preprocessing needed",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "dataSensitivity",
-        "label": "What do you think is the sensitivity of the data that will be used?",
-        "options": [
-          {
-            "value": "high",
-            "label": " Highly sensitive (e.g., personally identifiable information)",
-            "selected": false
-          },
-          {
-            "value": "good",
-            "label": "Generally sensitive (e.g., financial records)",
-            "selected": false
-          },
-          {
-            "value": "average",
-            "label": "Moderately sensitive(e.g., internal business documents)",
-            "selected": false
-          },
-          {
-            "value": "low",
-            "label": "Low sensitive (e.g., public-facing content)",
-            "selected": false
-          },
-          {
-            "value": "not",
-            "label": "Not sensitive (e.g., anonymized or aggregated data)",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "accuracyTolerance",
-        "label": "What is the accuracy tolerance for the application's output for this use case?",
-        "options": [
-          {
-            "value": "high",
-            "label": "Zero tolerance for errors (critical systems)",
-            "selected": false
-          },
-          {
-            "value": "good",
-            "label": "Very high accuracy required (above 95%)",
-            "selected": false
-          },
-          {
-            "value": "average",
-            "label": "Moderate accuracy required (80-95%)",
-            "selected": false
-          },
-          {
-            "value": "low",
-            "label": "Some tolerance for inaccuracies (60-80%)",
-            "selected": false
-          },
-          {
-            "value": "not",
-            "label": "High tolerance for inaccuracies (below 60%)",
-            "selected": false
-          }
+        "title": "Competitive Advantage",
+        "defaultInfo": [
+          { "icon": "📊", "title": "Type Of Use", "options": [{"value": "Everyday", "selected":true}, {"value": "Augment", "selected":false}, {"value": "Transform", "selected":false}] },
+          { "icon": "🧹", "title": "Type Of App", "options": [{"value": "Content", "selected":false}, {"value": "Delivery", "selected":false}, {"value": "Triage", "selected":true}] },
+          { "icon": "🔒", "title": "Quadrant Mapping", "options": [{"value": "Quadrant-1", "selected":false}, {"value": "Quadrant-2", "selected":true}, {"value": "Quadrant-3", "selected": false}] }
         ],
-        "explanation": "Would this use be considered pricing, underwriting, claims & fraud decisioning, reserving, employee decisions or audit or assurance? If yes, then it needs to be accurate / may carry higher risk."
-      },
-      {
-        "id": "coreDataUsage",
-        "label": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
-        "options": [
+        "questions": [
           {
-            "value": "1",
-            "label": "It is core to one of these operations",
-            "selected": false
+            "id": "dataVolume",
+            "label": "What do you think is the volume of data the organization has available for this application?",
+            "options": [
+              { "value": "extensive", "label": "Extensive data (petabytes or more)", "selected":false },
+              { "value": "large", "label": "Large data volume (terabytes)", "selected":false },
+              { "value": "moderate", "label": "Moderate data volume (gigabytes)", "selected":false },
+              { "value": "small", "label": "Small but manageable data volume (megabytes)", "selected":false },
+              { "value": "limited", "label": "Limited data availability (kilobytes or less)", "selected":false }
+            ]
           },
           {
-            "value": "2",
-            "label": "It is core to two of these operations.",
-            "selected": false
+            "id": "dataQuality",
+            "label": "What do you think is the quality of data the organization has available?",
+            "options": [
+              { "value": "high", "label": "High quality, well-curated data", "selected":false },
+              { "value": "good", "label": "Good quality with minor inconsistencies", "selected":false },
+              { "value": "average", "label": "Average quality, requires some cleaning", "selected":false },
+              { "value": "low", "label": "Poor quality, significant preprocessing needed", "selected":false }
+            ]
           },
           {
-            "value": "3",
-            "label": "It is core all of these operations.",
-            "selected": false
-          },
-          {
-            "value": "No",
-            "label": "It is not core to any of these operations.",
-            "selected": false
-          }
+              "id": "dataSensitivity",
+              "label": "What do you think is the sensitivity of the data that will be used?",
+              "options": [
+                { "value": "high", "label": "Highly sensitive (e.g., personally identifiable information)", "selected":false },
+                { "value": "good", "label": "Generally sensitive (e.g., financial records)", "selected":false },
+                { "value": "average", "label": "Moderately sensitive(e.g., internal business documents)", "selected":false },
+                { "value": "low", "label": "Low sensitive (e.g., public-facing content)", "selected":false },
+                { "value": "not", "label": "Not sensitive (e.g., anonymized or aggregated data)", "selected":false }
+              ]
+            },
+            {
+              "id": "accuracyTolerance",
+              "label": "What is the accuracy tolerance for the application's output for this use case?",
+              "options": [
+                { "value": "high", "label": "Zero tolerance for errors (critical systems)", "selected":false },
+                { "value": "good", "label": "Very high accuracy required (above 95%)", "selected":false },
+                { "value": "average", "label": "Moderate accuracy required (80-95%)", "selected":false },
+                { "value": "low", "label": "Some tolerance for inaccuracies (60-80%)", "selected":false },
+                { "value": "not", "label": "High tolerance for inaccuracies (below 60%)", "selected":false }
+              ]
+            }
         ]
       },
       {
-        "id": "businessVertical",
-        "label": "Which segment would you consider your business vertical to be most closely aligned to ?",
-        "options": [
-          {
-            "value": "Core Insurance",
-            "label": "Core Insurance",
-            "selected": false
-          },
-          {
-            "value": "Marketing, Digital, Customer Experience",
-            "label": "Marketing, Digital, Customer Experience",
-            "selected": false
-          },
-          {
-            "value": "People & Finance, Operations, Risk",
-            "label": "People & Finance, Operations, Risk",
-            "selected": false
-          },
-          {
-            "value": "Tech & Legal",
-            "label": "Tech & Legal",
-            "selected": false
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "RiskAssessorAI - Triage, Review & Risk Assessment",
-    "description": "AI-driven analytics for triage and risk assessment, providing data-driven insights to support strategic decision-making.",
-    "defaultInfo": [
-      {
-        "icon": "\ud83e\uddf9",
-        "title": "Linked AI Value",
-        "options": [
-          {
-            "value": "Decision Intelligence And Reporting",
-            "selected": true
-          }
-        ]
-      },
-      {
-        "icon": "\ud83d\udcca",
-        "title": "AI Responsiible Use",
-        "options": [
-          {
-            "value": "Everyday use",
-            "selected": false
-          },
-          {
-            "value": "Augmentation",
-            "selected": true
-          },
-          {
-            "value": "Transformation",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "icon": "\ud83d\udd12",
-        "title": "Quadrant Mapping",
-        "options": [
-          {
-            "value": "Quadrant-1",
-            "selected": false
-          },
-          {
-            "value": "Quadrant-2",
-            "selected": true
-          },
-          {
-            "value": "Quadrant-3",
-            "selected": false
-          },
-          {
-            "value": "Quadrant-4",
-            "selected": false
-          }
-        ]
-      }
-    ],
-    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized tool designed to augment the triage and risk assessment process with expert oversight, tailored to support strategic decision-making within the organization.",
-    "questions": [
-      {
-        "id": "aiUsageInTeam",
-        "label": "how widely AI is used in your current team today?",
-        "options": [
-          {
-            "value": "Extensively",
-            "label": "AI is deeply embedded in our workflows, driving automation, analytics, and decision-making processes.",
-            "selected": false
-          },
-          {
-            "value": "Moderately",
-            "label": "AI is utilized in several critical functions, enhancing efficiency and providing data-driven insights.",
-            "selected": false
-          },
-          {
-            "value": "Sparingly",
-            "label": "AI is applied in a limited number of specific tasks or experimental projects.",
-            "selected": false
-          },
-          {
-            "value": "Not at all",
-            "label": "AI has not yet been integrated into our team's operations.",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "dataVolume",
-        "label": "What do you think is the volume of data the organization has available for this application?",
-        "options": [
-          {
-            "value": "extensive",
-            "label": "Extensive data (petabytes or more)",
-            "selected": false
-          },
-          {
-            "value": "large",
-            "label": "Large data volume (terabytes)",
-            "selected": false
-          },
-          {
-            "value": "moderate",
-            "label": "Moderate data volume (gigabytes)",
-            "selected": false
-          },
-          {
-            "value": "small",
-            "label": "Small but manageable data volume (megabytes)",
-            "selected": false
-          },
-          {
-            "value": "limited",
-            "label": "Limited data availability (kilobytes or less)",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "dataQuality",
-        "label": "What do you think is the quality of data the organization has available?",
-        "options": [
-          {
-            "value": "high",
-            "label": "High quality, well-curated data",
-            "selected": false
-          },
-          {
-            "value": "good",
-            "label": "Good quality with minor inconsistencies",
-            "selected": false
-          },
-          {
-            "value": "average",
-            "label": "Average quality, requires some cleaning",
-            "selected": false
-          },
-          {
-            "value": "low",
-            "label": "Poor quality, significant preprocessing needed",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "dataSensitivity",
-        "label": "What do you think is the sensitivity of the data that will be used?",
-        "options": [
-          {
-            "value": "high",
-            "label": " Highly sensitive (e.g., personally identifiable information)",
-            "selected": false
-          },
-          {
-            "value": "good",
-            "label": "Generally sensitive (e.g., financial records)",
-            "selected": false
-          },
-          {
-            "value": "average",
-            "label": "Moderately sensitive(e.g., internal business documents)",
-            "selected": false
-          },
-          {
-            "value": "low",
-            "label": "Low sensitive (e.g., public-facing content)",
-            "selected": false
-          },
-          {
-            "value": "not",
-            "label": "Not sensitive (e.g., anonymized or aggregated data)",
-            "selected": false
-          }
-        ]
-      },
-      {
-        "id": "accuracyTolerance",
-        "label": "What is the accuracy tolerance for the application's output for this use case?",
-        "options": [
-          {
-            "value": "high",
-            "label": "Zero tolerance for errors (critical systems)",
-            "selected": false
-          },
-          {
-            "value": "good",
-            "label": "Very high accuracy required (above 95%)",
-            "selected": false
-          },
-          {
-            "value": "average",
-            "label": "Moderate accuracy required (80-95%)",
-            "selected": false
-          },
-          {
-            "value": "low",
-            "label": "Some tolerance for inaccuracies (60-80%)",
-            "selected": false
-          },
-          {
-            "value": "not",
-            "label": "High tolerance for inaccuracies (below 60%)",
-            "selected": false
-          }
+        "title": "Innovation",
+        "defaultInfo": [
+          { "icon": "📊", "title": "Type Of Use", "options": [{"value": "Everyday", "selected":true}, {"value": "Augment", "selected":false}, {"value": "Transform", "selected":false}] },
+          { "icon": "🧹", "title": "Type Of App", "options": [{"value": "Content", "selected":false}, {"value": "Delivery", "selected":false}, {"value": "Triage", "selected":true}] },
+          { "icon": "🔒", "title": "Quadrant Mapping", "options": [{"value": "Quadrant-1", "selected":false}, {"value": "Quadrant-2", "selected":true}, {"value": "Quadrant-3", "selected": false}] }
         ],
-        "explanation": "Would this use be considered pricing, underwriting, claims & fraud decisioning, reserving, employee decisions or audit or assurance? If yes, then it needs to be accurate / may carry higher risk."
-      },
-      {
-        "id": "coreDataUsage",
-        "label": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
-        "options": [
+        "questions": [
           {
-            "value": "1",
-            "label": "It is core to one of these operations",
-            "selected": false
+            "id": "dataVolume",
+            "label": "What do you think is the volume of data the organization has available for this application?",
+            "options": [
+              { "value": "extensive", "label": "Extensive data (petabytes or more)", "selected":false },
+              { "value": "large", "label": "Large data volume (terabytes)", "selected":false },
+              { "value": "moderate", "label": "Moderate data volume (gigabytes)", "selected":false },
+              { "value": "small", "label": "Small but manageable data volume (megabytes)", "selected":false },
+              { "value": "limited", "label": "Limited data availability (kilobytes or less)", "selected":false }
+            ]
           },
           {
-            "value": "2",
-            "label": "It is core to two of these operations.",
-            "selected": false
+            "id": "dataQuality",
+            "label": "What do you think is the quality of data the organization has available?",
+            "options": [
+              { "value": "high", "label": "High quality, well-curated data", "selected":false },
+              { "value": "good", "label": "Good quality with minor inconsistencies", "selected":false },
+              { "value": "average", "label": "Average quality, requires some cleaning", "selected":false },
+              { "value": "low", "label": "Poor quality, significant preprocessing needed", "selected":false }
+            ]
           },
           {
-            "value": "3",
-            "label": "It is core all of these operations.",
-            "selected": false
-          },
-          {
-            "value": "No",
-            "label": "It is not core to any of these operations.",
-            "selected": false
-          }
+              "id": "dataSensitivity",
+              "label": "What do you think is the sensitivity of the data that will be used?",
+              "options": [
+                { "value": "high", "label": " Highly sensitive (e.g., personally identifiable information)", "selected":false },
+                { "value": "good", "label": "Generally sensitive (e.g., financial records)", "selected":false },
+                { "value": "average", "label": "Moderately sensitive(e.g., internal business documents)", "selected":false },
+                { "value": "low", "label": "Low sensitive (e.g., public-facing content)", "selected":false},
+                { "value": "not", "label": "Not sensitive (e.g., anonymized or aggregated data)", "selected":false }
+              ]
+            },
+            {
+              "id": "accuracyTolerance",
+              "label": "What is the accuracy tolerance for the application's output for this use case?",
+              "options": [
+                { "value": "high", "label": "Zero tolerance for errors (critical systems)", "selected":false },
+                { "value": "good", "label": "Very high accuracy required (above 95%)", "selected":false },
+                { "value": "average", "label": "Moderate accuracy required (80-95%)", "selected":false },
+                { "value": "low", "label": "Some tolerance for inaccuracies (60-80%)", "selected":false },
+                { "value": "not", "label": "High tolerance for inaccuracies (below 60%)", "selected":false }
+              ]
+            }
         ]
       },
       {
-        "id": "businessVertical",
-        "label": "Which segment would you consider your business vertical to be most closely aligned to ?",
-        "options": [
+        "title": "Market Share",
+        "defaultInfo": [
+          { "icon": "📊", "title": "Type Of Use", "options": [{"value": "Everyday", "selected":true}, {"value": "Augment", "selected":false}, {"value": "Transform", "selected":false}] },
+          { "icon": "🧹", "title": "Type Of App", "options": [{"value": "Content", "selected":false}, {"value": "Delivery", "selected":false}, {"value": "Triage", "selected":true}] },
+          { "icon": "🔒", "title": "Quadrant Mapping", "options": [{"value": "Quadrant-1", "selected":false}, {"value": "Quadrant-2", "selected":true}, {"value": "Quadrant-3", "selected": false}] }
+        ],
+        "questions": [
           {
-            "value": "Core Insurance",
-            "label": "Core Insurance",
-            "selected": false
+            "id": "dataVolume",
+            "label": "What do you think is the volume of data the organization has available for this application?",
+            "options": [
+              { "value": "extensive", "label": "Extensive data (petabytes or more)", "selected":false },
+              { "value": "large", "label": "Large data volume (terabytes)", "selected":false },
+              { "value": "moderate", "label": "Moderate data volume (gigabytes)", "selected":false },
+              { "value": "small", "label": "Small but manageable data volume (megabytes)", "selected":false },
+              { "value": "limited", "label": "Limited data availability (kilobytes or less)", "selected":false }
+            ]
           },
           {
-            "value": "Marketing, Digital, Customer Experience",
-            "label": "Marketing, Digital, Customer Experience",
-            "selected": false
+            "id": "dataQuality",
+            "label": "What do you think is the quality of data the organization has available?",
+            "options": [
+              { "value": "high", "label": "High quality, well-curated data", "selected":false },
+              { "value": "good", "label": "Good quality with minor inconsistencies", "selected":false },
+              { "value": "average", "label": "Average quality, requires some cleaning", "selected":false },
+              { "value": "low", "label": "Poor quality, significant preprocessing needed" , "selected":false}
+            ]
           },
           {
-            "value": "People & Finance, Operations, Risk",
-            "label": "People & Finance, Operations, Risk",
-            "selected": false
-          },
-          {
-            "value": "Tech & Legal",
-            "label": "Tech & Legal",
-            "selected": false
-          }
+              "id": "dataSensitivity",
+              "label": "What do you think is the sensitivity of the data that will be used?",
+              "options": [
+                { "value": "high", "label": " Highly sensitive (e.g., personally identifiable information)", "selected":false },
+                { "value": "good", "label": "Generally sensitive (e.g., financial records)", "selected":false },
+                { "value": "average", "label": "Moderately sensitive(e.g., internal business documents)", "selected":false },
+                { "value": "low", "label": "Low sensitive (e.g., public-facing content)", "selected":false },
+                { "value": "not", "label": "Not sensitive (e.g., anonymized or aggregated data)", "selected":false }
+              ]
+            },
+            {
+              "id": "accuracyTolerance",
+              "label": "What is the accuracy tolerance for the application's output for this use case?",
+              "options": [
+                { "value": "high", "label": "Zero tolerance for errors (critical systems)", "selected":false },
+                { "value": "good", "label": "Very high accuracy required (above 95%)", "selected":false },
+                { "value": "average", "label": "Moderate accuracy required (80-95%)", "selected":false },
+                { "value": "low", "label": "Some tolerance for inaccuracies (60-80%)", "selected":false },
+                { "value": "not", "label": "High tolerance for inaccuracies (below 60%)", "selected":false }
+              ]
+            }
         ]
       }
-    ]
-  }
-]
+  ]

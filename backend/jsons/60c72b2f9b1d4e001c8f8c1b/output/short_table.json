@@ -1,15 +1,48 @@
 {
     "slides": [
         {
-            "title": "Ideation Tool Recommendations",
+            "title": "AI Applications Overview",
             "content": [
                 {
-                    "headers": ["Sr No.","Recommended AI Application", "Linked AI Value", "Connected Focus Areas","Responsible AI Use Guidelines", "AI Tech Enablement Suggestions"],
+                    "headers": ["Focus Area", "Application Types", "Time Horizon"],
                     "data": [
-                        ["1", "Personal Assistants", "Operational Efficiency", "Engineering, SDLC", "Everyday Use", "Shape"],
-                        ["2", "Content Workers", "Customer Value", "SDLC", "Augment", "Compose"],
-                        ["3", "End to End Decisioning", "Competitive Advantage", "Engineering, Culture", "Transform", "Build"]
-                        
+                        ["Operational Efficiency", "Process Automation, Resource Optimization, Predictive Maintenance", "Everyday Use"],
+                        ["Customer Value", "Personalization, Chatbots, Recommendation Systems", "FY26 (2 years)"],
+                        ["Competitive Advantage", "Predictive Analytics, AI-Powered Products, Market Intelligence", "Augment"],
+                        ["Reporting Intelligence", "Automated Reporting, Data Visualization, Real-time Analytics", "Transform"],
+                        ["Technology Development", "AI Research, Machine Learning Integration, AI Infrastructure", "Augment"]
+                    ],
+                    "type": "table"
+                }
+            ]
+        },
+        {
+            "title": "AI Applications Details",
+            "content": [
+                {
+                    "headers": ["Focus Area", "Information Exposure", "Data Sensitivity", "Usage Complexity", "Risk Rating"],
+                    "data": [
+                        ["Operational Efficiency", "Internal", "Medium", "Moderate", "2"],
+                        ["Customer Value", "External", "High", "Low", "3"],
+                        ["Competitive Advantage", "Confidential", "Very High", "High", "4"],
+                        ["Reporting Intelligence", "Internal", "Medium", "Low", "2"],
+                        ["Technology Development", "Confidential", "High", "Very High", "5"]
+                    ],
+                    "type": "table"
+                }
+            ]
+        },
+        {
+            "title": "AI Applications Implementation Suggestions",
+            "content": [
+                {
+                    "headers": ["Focus Area", "Suggested Route", "Suggested Reuse"],
+                    "data": [
+                        ["Operational Efficiency", "Compose"],
+                        ["Customer Value", "Build", "New app"],
+                        ["Competitive Advantage", "Shape"],
+                        ["Reporting Intelligence", "Compose"],
+                        ["Technology Development", "Shape"]
                     ],
                     "type": "table"
                 }

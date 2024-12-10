@@ -1,7 +1,7 @@
 {
   "message": [
     {
-      "id": "1728905841635",
+      "id": "1729003447297",
       "text": "Could you please provide a few examples of implementing operational efficiency?",
       "isBot": true,
       "examples": [
@@ -12,11 +12,11 @@
       ]
     },
     {
-      "text": "Faster claim processing by a claims manager. Faster claim classification/segmentation by a claims manager.",
+      "text": "Could you please provide a few examples of implementing operational efficiency?",
       "isBot": false
     },
     {
-      "id": "1728905851594",
+      "id": "1729003452070",
       "text": "Could you please provide a few examples of enhancing customer value?",
       "isBot": true,
       "examples": [
@@ -25,11 +25,11 @@
       ]
     },
     {
-      "text": " Please provide the input like the below examples:  Implementing customer feedback loops. Offering personalized experiences based on customer data. Please provide the input like the below examples:  Implementing customer feedback loops. Offering personalized experiences based on customer data.",
+      "text": "Could you please provide a few examples of implementing operational efficiency?",
       "isBot": false
     },
     {
-      "id": "1728905869574",
+      "id": "1729003459315",
       "text": "Could you please provide a few examples of achieving competitive advantage?",
       "isBot": true,
       "examples": [
@@ -38,7 +38,20 @@
       ]
     },
     {
-      "text": " Please provide the input like the below examples:  Implementing customer feedback loops. Offering personalized experiences based on customer data. Please provide the input like the below examples:  Implementing customer feedback loops. Offering personalized experiences based on customer data.",
+      "text": "Could you please provide a few examples of implementing operational efficiency?",
+      "isBot": false
+    },
+    {
+      "id": "1729003467570",
+      "text": "Could you please provide a few examples of fostering innovation?",
+      "isBot": true,
+      "examples": [
+        "Encouraging employee-led brainstorming sessions.",
+        "Investing in R&D for new technologies."
+      ]
+    },
+    {
+      "text": "Could you please provide a few examples of implementing operational efficiency?",
       "isBot": false
     }
   ]

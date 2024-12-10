@@ -1,52 +1,29 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
 import { Bot, User } from "lucide-react";
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import useAxios from "hooks/useAxios";
 import { toast } from 'react-toastify';
-import { HelpCircle } from "lucide-react";
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "common/Tooltip";
 import Breadcrumb from "components/Breadcrumb/Breadcrumb";
-import Loader from 'common/Loader';
-import AITechEnablementPPT from "../assets/ppts/ai_tech_enablement.pptx";
-import { useApp } from 'context/AppContext';
+import Result from "components/Result/Result";
+import { useApp } from "context/AppContext";
 
 const AITechEnablement = () => {
-  const navigate = useNavigate()
-  const { postCall, getCall } = useAxios();
-  const { setFinalResultValues } = useApp()
+  const { postCall } = useAxios();
+  const { techEnableValues, userDetails } = useApp();
   const [currentArea, setCurrentArea] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [inputAnswers, setInputAnswers] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [techEnablementAreas, setTechEnablementAreas] = useState([]);
+  const [showResult, setShowResult] = useState(false);
+  const [FinalresultValues, setFinalResultValues] = useState([]);
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
-
-  const extractSelectedValues = (data) => {
-    return data.reduce((acc, item) => {
-      const selectedOption = item.options.find(opt => opt.selected);
-      const propertyMap = {
-        'Linked AI Value': 'linkedAIvalue',
-        'AI Responsiible Use': 'aiResponsibleUse',
-        'Quadrant Mapping': 'quadrantMapping'
-      };
-      
-      const propertyName = propertyMap[item.title];
-      if (propertyName && selectedOption) {
-        acc[propertyName] = selectedOption.value;
-      }
-      
-      return acc;
-    }, {});
-  };
 
   const handleAnswer = (selectedOption) => {
     const section = techEnablementAreas[currentArea];
     const question = section.questions[currentQuestion];
-    const { linkedAIvalue, aiResponsibleUse, quadrantMapping } = extractSelectedValues(section.defaultInfo)
     setAnswers(prev => ({
       ...prev,
       [currentArea]: {
@@ -55,48 +32,6 @@ const AITechEnablement = () => {
       }
     }));
 
-    setInputAnswers(prevState => {
-      const newState = { ...prevState };
-      const [newAppName, categoryName] = section.title.split('-').map(item => item.trim());
-      // If this section doesn't exist, create it
-      if (!newState[currentArea+1]) {
-        newState[currentArea+1] = {
-          new_app_name: newAppName,
-          category_name: categoryName,
-          description: section.description,
-          value_area_name: aiResponsibleUse,
-          ai_use_class: linkedAIvalue,
-          ai_enablement_quadrant: quadrantMapping,
-          quadrant_reasoning: section.quadrant_reasoning, // Add reasoning if available
-          questions: {}
-        };
-      }
-      
-      // Add or update the question for this section
-      if (question) {
-        // Check if question already exists
-        const existingQuestionIndex = Object.values(newState[currentArea+1].questions)
-          .findIndex(q => q.question === question.label);
-
-        if (existingQuestionIndex === -1) {
-          // Question doesn't exist, add it with next available number
-          const questionCount = Object.keys(newState[currentArea+1].questions).length + 1;
-          newState[currentArea+1].questions[questionCount] = {
-            question: question.label,
-            answer: selectedOption?.label || ''
-          };
-        } else {
-          // Question exists, update the answer if needed
-          const existingQuestionNumber = Object.keys(newState[currentArea+1].questions)[existingQuestionIndex];
-          newState[currentArea+1].questions[existingQuestionNumber] = {
-            question: question.label,
-            answer: selectedOption?.label || ''
-          };
-        }
-      }
-      
-      return newState;
-    });
     setMessages((preMessages) => {
       if(preMessages[preMessages.length-1].type === "user"){
         preMessages[preMessages.length-1].options.forEach((option)=>{
@@ -114,19 +49,10 @@ const AITechEnablement = () => {
       if (currentQuestion < section.questions.length - 1) {
         const nextQuestion = currentQuestion + 1;
         setCurrentQuestion(nextQuestion);
-        if(section.questions[nextQuestion].explanation){
-          updatedMessages.push(
-            { type: 'bot', content: section.questions[nextQuestion].label },
-            { type: 'bot', content:section.questions[nextQuestion].explanation },
-            { type: 'user', content: 'options', options: section.questions[nextQuestion].options, "isAnswered":false }
-          );
-        } else{
-          updatedMessages.push(
-            { type: 'bot', content: section.questions[nextQuestion].label },
-            { type: 'user', content: 'options', options: section.questions[nextQuestion].options, "isAnswered":false }
-          );
-        }
-        
+        updatedMessages.push(
+          { type: 'bot', content: section.questions[nextQuestion].label },
+          { type: 'user', content: 'options', options: section.questions[nextQuestion].options, "isAnswered":false }
+        );
       } else if (currentArea < techEnablementAreas.length - 1) {
         updatedMessages.push({ type: 'bot', content: 'Great! Let\'s move on to the next section.' });
       } else {
@@ -140,11 +66,11 @@ const AITechEnablement = () => {
     event.preventDefault();
     setIsSubmitting(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
-    const userId = localStorage.getItem("userid");
-    const result = await postCall("save-tech-reasoning", inputAnswers, { "user-id": userId });
+    setShowResult(true);
+    const result = await postCall("save-tech-reasoning", answers, { "user-id": userDetails.id });
       if(result.success){
         setFinalResultValues(result.data)
-        navigate('/final-result')
+        setShowResult(true)
       } else {
         toast.warn(`${result.error}`)
       }
@@ -166,67 +92,49 @@ const AITechEnablement = () => {
   };
 
   useEffect(()=>{
-    const userId = localStorage.getItem("userid");
-    if(userId === null || userId === undefined || userId === "" ){
-      navigate("/")
-    }
-    getCall("fetch-tech-reasoning", {'user-id': userId}).then((result)=>{
-      setTechEnablementAreas(result.data)
-    })
-    // eslint-disable-next-line
-  },[])
-
-  const initializeSection = useCallback(() => {
-    if(techEnablementAreas.length){
-      const section = techEnablementAreas[currentArea];
-      if(section?.questions[0]?.explanation){
-        setMessages([
-          { type: 'bot', content: `Let's discuss ${section.title}.` },
-          { type: 'bot', content: section.questions[0].label },
-          { type: 'bot', content: section.questions[0].explanation },
-          { type: 'user', content: 'options', options: section.questions[0].options, "isAnswered":false }
-        ]);
-      } else {
-        setMessages([
-          { type: 'bot', content: `Let's discuss ${section.title}.` },
-          { type: 'bot', content: section.questions[0].label },
-          { type: 'user', content: 'options', options: section.questions[0].options, "isAnswered":false }
-        ]);
-      } 
-      setCurrentQuestion(0);
-    }
-  },[techEnablementAreas, currentArea])
-
-  useEffect(() => {
-    if(techEnablementAreas.length){
-      initializeSection();
-    }
-  }, [currentArea, techEnablementAreas, initializeSection]);
-
-  useEffect(()=>{
     if(messages.length){
       scrollToBottom()
     }
   },[messages]);
 
+  useEffect(()=>{
+    setTechEnablementAreas(techEnableValues);
+  },[techEnableValues])
+
+  useEffect(() => {
+    if(techEnablementAreas.length){
+      initializeSection();
+    }
+  }, [currentArea, techEnablementAreas]);
+
+  const initializeSection = () => {
+    const section = techEnablementAreas[currentArea];
+      setMessages([
+        { type: 'bot', content: `Let's discuss ${section.title}.` },
+        { type: 'bot', content: section.questions[0].label },
+        { type: 'user', content: 'options', options: section.questions[0].options, "isAnswered":false }
+      ]);
+      setCurrentQuestion(0);
+  };
+
   if (techEnablementAreas.length === 0) {
-    return <Loader/>;
+    return <div>Loading...</div>;
   }
   return (
     <>
-      <Breadcrumb pageName="AI Tech Enablement" ppt={AITechEnablementPPT}/>
-      <motion.div
+      <Breadcrumb pageName="AI Tech Enablement"/>
+      {!showResult ? (
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="w-full"
-      >
+        >
           <div className="bg-white shadow-xl rounded-lg overflow-hidden my-6">
             <div className="bg-primary text-white p-4">
               <h2 className="text-xl font-bold">{techEnablementAreas[currentArea]?.title}</h2>
               <p className="text-sm text-light-gray">
-                {/* Step {currentArea + 1} of {techEnablementAreas.length} */}
-                {techEnablementAreas[currentArea].description}
+                Step {currentArea + 1} of {techEnablementAreas.length}
               </p>
             </div>
             <div className="p-4">
@@ -239,36 +147,13 @@ const AITechEnablement = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * index, duration: 0.5 }}
                   >
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        <span className="mr-1 text-lg">{item.icon}</span>
-                        <h4 className="font-semibold text-sm text-primary">{item.title}</h4>
-                      </div>
-                      
-                      {item.title === "Quadrant Mapping" ? 
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button className="flex-shrink-0 p-1 hover:bg-gray-200 rounded-full transition-colors">
-                              <HelpCircle className="h-4 w-4 text-primary" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent 
-                            className="bg-white text-black z-50"
-                            side="left"
-                            sideOffset={5}
-                          >
-                            <p className="mb-2 text-xs">
-                             {techEnablementAreas[currentArea].quadrant_reasoning}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                       : null}
+                    <div className="flex items-center mb-1">
+                      <span className="mr-1 text-lg">{item.icon}</span>
+                      <h4 className="font-semibold text-sm text-primary">{item.title}</h4>
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {item.options.map((option, optIndex) => (
-                        <span key={`opt_${index}_${optIndex}`} className={`px-1 py-0.5 rounded text-xs ${ option.selected ? 'bg-primary text-light-gray' : 'text-primary bg-white'} `}>
+                        <span key={optIndex} className={`px-1 py-0.5 rounded text-xs ${ option.selected ? 'bg-primary text-light-gray' : 'text-primary bg-white'} `}>
                           {option.value}
                         </span>
                       ))}
@@ -290,7 +175,7 @@ const AITechEnablement = () => {
                         <div className="space-y-2">
                           {message.options.map((option, optIndex) => {
                               return (
-                              <label key={`${option.value}_${optIndex}_${index}`} className={`px-4 flex items-center space-x-2 rounded-full transition-all duration-300 ease-in-out "
+                              <label key={option.value} className={`px-4 flex items-center space-x-2 rounded-full transition-all duration-300 ease-in-out "
                                 ${
                                   message.isAnswered
                                     ? option.selected
@@ -350,7 +235,9 @@ const AITechEnablement = () => {
               )}
             </div>
           </div>
-      </motion.div>
+        </motion.div>
+      ): <Result step={3} resultValues={FinalresultValues}/>
+      }
     </>
     
   );

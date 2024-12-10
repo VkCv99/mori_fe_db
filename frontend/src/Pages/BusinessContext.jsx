@@ -5,10 +5,12 @@ import { toast } from 'react-toastify';
 import Breadcrumb from "components/Breadcrumb/Breadcrumb";
 import useAxios from "hooks/useAxios"
 import { useApp } from "context/AppContext";
-import BusinessContextPPT from "../assets/ppts/business_context.pptx";
+// import { suggestions } from 'JSONs/suggestions';
+// import { suggestions } from 'JSONs/suggestions';
 
 const BusinessContext = () => {
-    const { handleDefaultSuggestions } = useApp();
+
+    const { handleDefaultSuggestions, userDetails } = useApp();
     const navigate = useNavigate()
     const { postCall } = useAxios()
     const [mainInfo, setMainInfo] = useState({ persona: '', businessVertical: '', winningAspiration: '' });
@@ -51,17 +53,14 @@ const BusinessContext = () => {
   
     const handleSubmit = async(e) => {
       e.preventDefault();
-      const userId = localStorage.getItem("userid");
-      if(userId === null || userId === undefined || userId === "" ){
-        navigate("/")
-      }
       const data = {businessContext:mainInfo, focusAreas};
-      const result = await postCall("save-business-context", data, {'user-id': userId});
+      const result = await postCall("save-business-context", data, {'user-id': userDetails.id});
       if(result.success){
+          console.log("result.data", result.data)
           handleDefaultSuggestions(result.data)
           toast.success("your request has been summitted successfully")
           setTimeout(()=>{
-            navigate("/value-areas")
+            navigate("/linked-ai-value")
           }, 1000)
       }else{
           toast.warn(`${result.error}`)
@@ -70,7 +69,7 @@ const BusinessContext = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Business Context" ppt={BusinessContextPPT} />
+      <Breadcrumb pageName="Business Context" />
 
       <div className="grid grid-cols-1">
         <div className="flex flex-col gap-9">
@@ -216,7 +215,7 @@ const BusinessContext = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         {focusAreas.map((area, index) => (
-           <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-6" key={`${area.name}_${index}`}>
+           <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
            <div className="text-white p-4 bg-primary">
              <h3 className="text-xl font-bold">{area.name}</h3>
            </div>

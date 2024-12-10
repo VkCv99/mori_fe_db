@@ -1,0 +1,112 @@
+{
+  "0": {
+    "dataVolume": {
+      "value": "large",
+      "label": "Large data volume (terabytes)",
+      "selected": true
+    },
+    "dataQuality": {
+      "value": "good",
+      "label": "Good quality with minor inconsistencies",
+      "selected": true
+    },
+    "dataSensitivity": {
+      "value": "average",
+      "label": "Moderately sensitive(e.g., internal business documents)",
+      "selected": true
+    },
+    "accuracyTolerance": {
+      "value": "high",
+      "label": "Zero tolerance for errors (critical systems)",
+      "selected": true
+    }
+  },
+  "1": {
+    "dataVolume": {
+      "value": "moderate",
+      "label": "Moderate data volume (gigabytes)",
+      "selected": true
+    },
+    "dataQuality": {
+      "value": "low",
+      "label": "Poor quality, significant preprocessing needed",
+      "selected": true
+    },
+    "dataSensitivity": {
+      "value": "average",
+      "label": "Moderately sensitive(e.g., internal business documents)",
+      "selected": true
+    },
+    "accuracyTolerance": {
+      "value": "low",
+      "label": "Some tolerance for inaccuracies (60-80%)",
+      "selected": true
+    }
+  },
+  "2": {
+    "dataVolume": {
+      "value": "small",
+      "label": "Small but manageable data volume (megabytes)",
+      "selected": true
+    },
+    "dataQuality": {
+      "value": "low",
+      "label": "Poor quality, significant preprocessing needed",
+      "selected": true
+    },
+    "dataSensitivity": {
+      "value": "not",
+      "label": "Not sensitive (e.g., anonymized or aggregated data)",
+      "selected": true
+    },
+    "accuracyTolerance": {
+      "value": "good",
+      "label": "Very high accuracy required (above 95%)",
+      "selected": true
+    }
+  },
+  "3": {
+    "dataVolume": {
+      "value": "extensive",
+      "label": "Extensive data (petabytes or more)",
+      "selected": true
+    },
+    "dataQuality": {
+      "value": "good",
+      "label": "Good quality with minor inconsistencies",
+      "selected": true
+    },
+    "dataSensitivity": {
+      "value": "average",
+      "label": "Moderately sensitive(e.g., internal business documents)",
+      "selected": true
+    },
+    "accuracyTolerance": {
+      "value": "average",
+      "label": "Moderate accuracy required (80-95%)",
+      "selected": true
+    }
+  },
+  "4": {
+    "dataVolume": {
+      "value": "large",
+      "label": "Large data volume (terabytes)",
+      "selected": true
+    },
+    "dataQuality": {
+      "value": "average",
+      "label": "Average quality, requires some cleaning",
+      "selected": true
+    },
+    "dataSensitivity": {
+      "value": "low",
+      "label": "Low sensitive (e.g., public-facing content)",
+      "selected": true
+    },
+    "accuracyTolerance": {
+      "value": "low",
+      "label": "Some tolerance for inaccuracies (60-80%)",
+      "selected": true
+    }
+  }
+}

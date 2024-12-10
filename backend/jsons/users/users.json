@@ -1,38 +1,32 @@
 [
-  {
-    "id": "60c72b2f9b1d4e001c8f8c1a",
-    "name": "Alice Smith",
-    "email": "alice.smith@example.com",
-    "password": "password123"
-  },
-  {
-    "id": "60c72b2f9b1d4e001c8f8c1b",
-    "name": "Bob Johnson",
-    "email": "bob.johnson@example.com",
-    "password": "mypassword"
-  },
-  {
-    "id": "60c72b2f9b1d4e001c8f8c1c",
-    "name": "Charlie Brown",
-    "email": "charlie.brown@example.com",
-    "password": "charliepass"
-  },
-  {
-    "id": "60c72b2f9b1d4e001c8f8c1d",
-    "name": "Daisy Miller",
-    "email": "daisy.miller@example.com",
-    "password": "daisy2024"
-  },
-  {
-    "id": "60c72b2f9b1d4e001c8f8c1e",
-    "name": "Ethan Hunt",
-    "email": "ethan.hunt@example.com",
-    "password": "ethansecure"
-  },
-  {
-    "id": "60c72b2f9b1d4e001c8f8c1f",
-    "name": "abdul",
-    "email": "abdul@gmail.com",
-    "password": "12345"
-  }
+    {
+        "id": "60c72b2f9b1d4e001c8f8c1a",
+        "name": "Alice Smith",
+        "email": "alice.smith@example.com",
+        "password": "password123"
+    },
+    {
+        "id": "60c72b2f9b1d4e001c8f8c1b",
+        "name": "Bob Johnson",
+        "email": "bob.johnson@example.com",
+        "password": "mypassword"
+    },
+    {
+        "id": "60c72b2f9b1d4e001c8f8c1c",
+        "name": "Charlie Brown",
+        "email": "charlie.brown@example.com",
+        "password": "charliepass"
+    },
+    {
+        "id": "60c72b2f9b1d4e001c8f8c1d",
+        "name": "Daisy Miller",
+        "email": "daisy.miller@example.com",
+        "password": "daisy2024"
+    },
+    {
+        "id": "60c72b2f9b1d4e001c8f8c1e",
+        "name": "Ethan Hunt",
+        "email": "ethan.hunt@example.com",
+        "password": "ethansecure"
+    }
 ]

@@ -1,161 +1,102 @@
 [
-  {
-    "new_app_name": "RiskAssessorAI",
-    "value_area_name": "Decision Intelligence And Reporting",
-    "ai_use_class": "Augmentation",
-    "category_name": "Triage, Review & Risk Assessment",
-    "description": "AI-driven analytics for triage and risk assessment, providing data-driven insights to support strategic decision-making.",
-    "ai_enablement_quadrant": "Quadrant 2",
-    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized tool designed to augment the triage and risk assessment process with expert oversight, tailored to support strategic decision-making within the organization.",
-    "questions": {
-      "1": {
-        "question": "How widely is AI used in your current team today?",
-        "answer": [
-          "Sparingly: AI is applied in a limited number of specific tasks or experimental projects."
-        ]
-      },
-      "2": {
-        "question": "What do you think is the volume of data the organization has available for this application?",
-        "answer": ["Moderate data volume (gigabytes)"]
-      },
-      "3": {
-        "question": "What do you think is the quality of data the organization has available?",
-        "answer": ["Generally accurate"]
-      },
-      "4": {
-        "question": "What do you think is the sensitivity of the data that will be used?",
-        "answer": ["Low sensitivity (e.g., public-facing content)"]
-      },
-      "5": {
-        "question": "What is the accuracy tolerance for the application's output for this use case?",
-        "answer": ["Moderate accuracy required (80-95%)"]
-      },
-      "6": {
-        "question": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
-        "answer": ["Yes, it is core to one of these operations."]
-      },
-      "7": {
-        "question": "Which segment would you consider your business vertical to be most closely aligned to?",
-        "answer": ["People & Finance, Operations, Risk"]
-      }
+    {
+      "id":1,
+      "name": "Operational Efficiency",
+      "applicationTypes": ["Process Automation", "Resource Optimization", "Predictive Maintenance"],
+      "horizon": { "period": "FY25", "number": 1 },
+      "infoExposure": "Internal",
+      "dataSensitivity": "Medium",
+      "complexityOfUsage": "Moderate",
+      "riskRating": 2,
+      "opportunities": [
+        "Automate repetitive tasks to reduce manual labor and errors",
+        "Optimize resource allocation through predictive analytics"
+      ],
+      "suggestedRoute": "compose",
+      "suggestedReuse": "existing app",
+      "reasoning": [
+        "Composing AI capabilities into existing apps can quickly enhance operational efficiency without significant disruption to current processes.",
+        "Composing AI capabilities into existing apps can quickly enhance operational efficiency without significant disruption to current processes."
+      ]
     },
-    "app_name": "RiskAssessorAI",
-    "category": "Triage, Review & Risk Assessment",
-    "quadrant": "2",
-    "team_usage": "Sparingly",
-    "data_volume": "Moderate",
-    "data_quality": "Generally accurate",
-    "data_sensitivity": "Low",
-    "accuracy_tolerance": "80-95%",
-    "data_core_operation": "True",
-    "business_verticals": ["People & Finance", "Operations", "Risk"],
-    "data_ip_advantage": "Possible",
-    "customization_requirement": "Low",
-    "enablement_route": "Shape with Activators",
-    "potential_app_reuse": ["GenAI Claims assistant", "New Relic AI"],
-    "intended_use": "Augment triage and risk assessment process with expert oversight",
-    "support_for_decision_making": "Strategic decision-making within the organization",
-    "core_operation": "Insurance, customer, or employee operations",
-    "data_IP_advantage": "Possible",
-    "relevant_applications": ["GenAI Claims assistant", "New Relic AI"],
-    "data_advantage": "low",
-    "ip_advantage": "low",
-    "id": "1"
-  },
-  {
-    "new_app_name": "CustomerServiceEnhancer",
-    "value_area_name": "Decision Intelligence And Reporting",
-    "ai_use_class": "Augmentation",
-    "category_name": "Customer Service Delivery",
-    "description": "AI-driven chatbots and voice-bots to enhance customer service by providing instant responses and personalized interactions.",
-    "ai_enablement_quadrant": "Quadrant 2",
-    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized tool designed to augment the customer service process with AI capabilities, tailored to enhance customer interactions and provide personalized service.",
-    "questions": {
-      "1": {
-        "question": "How widely is AI used in your current team today?",
-        "answer": [
-          "Moderately: AI is utilized in several critical functions, enhancing efficiency and providing data-driven insights."
-        ]
-      },
-      "2": {
-        "question": "What do you think is the volume of data the organization has available for this application?",
-        "answer": ["Large data volume (terabytes)"]
-      },
-      "3": {
-        "question": "What do you think is the quality of data the organization has available?",
-        "answer": ["Generally accurate"]
-      },
-      "4": {
-        "question": "What do you think is the sensitivity of the data that will be used?",
-        "answer": ["Sensitive (e.g., financial records)"]
-      },
-      "5": {
-        "question": "What is the accuracy tolerance for the application's output for this use case?",
-        "answer": ["Very high accuracy required (above 95%)"]
-      },
-      "6": {
-        "question": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
-        "answer": ["Yes, it is core to one of these operations."]
-      },
-      "7": {
-        "question": "Which segment would you consider your business vertical to be most closely aligned to?",
-        "answer": ["Marketing, Digital, Customer Experience"]
-      }
+    {
+      "id":2,
+      "name": "Customer Value",
+      "applicationTypes": ["Personalization", "Chatbots", "Recommendation Systems"],
+      "horizon": { "period": "FY26", "number": 2 },
+      "infoExposure": "External",
+      "dataSensitivity": "High",
+      "complexityOfUsage": "Low",
+      "riskRating": 3,
+      "opportunities": [
+        "Personalize customer experiences using AI-driven insights",
+        "Enhance customer support with intelligent chatbots"
+      ],
+      "suggestedRoute": "build",
+      "suggestedReuse": "new app",
+      "reasoning": [
+        "Building a new AI-powered application can provide tailored solutions for enhancing customer value, ensuring a seamless integration of personalization and recommendation features.",
+        "Building a new AI-powered application can provide tailored solutions for enhancing customer value, ensuring a seamless integration of personalization and recommendation features."
+      ]
     },
-    "app_name": "CustomerServiceEnhancer",
-    "enablement_route": "Compose with Builders",
-    "potential_app_reuse": [],
-    "data_advantage": "high",
-    "ip_advantage": "high",
-    "id": "2"
-  },
-  {
-    "new_app_name": "ClaimsDecisionAI",
-    "value_area_name": "Decision Intelligence And Reporting",
-    "ai_use_class": "Augmentation",
-    "category_name": "End-to-End Decisioning",
-    "description": "AI-powered end-to-end decisioning systems for handling claims and fraud cases, providing faster and more accurate resolutions.",
-    "ai_enablement_quadrant": "Quadrant 4",
-    "quadrant_reasoning": "This application falls into Quadrant 4 as it requires the development of specialized, industry-specific AI solutions that handle high-risk and complex processes, such as claims and fraud decisioning in the insurance industry.",
-    "questions": {
-      "1": {
-        "question": "How widely is AI used in your current team today?",
-        "answer": [
-          "Extensively: AI is deeply embedded in our workflows, driving automation, analytics, and decision-making processes."
-        ]
-      },
-      "2": {
-        "question": "What do you think is the volume of data the organization has available for this application?",
-        "answer": ["Extensive data (petabytes or more)"]
-      },
-      "3": {
-        "question": "What do you think is the quality of data the organization has available?",
-        "answer": ["Highly reliable"]
-      },
-      "4": {
-        "question": "What do you think is the sensitivity of the data that will be used?",
-        "answer": [
-          "Highly sensitive (e.g., personally identifiable information)"
-        ]
-      },
-      "5": {
-        "question": "What is the accuracy tolerance for the application's output for this use case?",
-        "answer": ["Zero tolerance for errors (critical systems)"]
-      },
-      "6": {
-        "question": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
-        "answer": ["Yes, it is core to all of these operations."]
-      },
-      "7": {
-        "question": "Which segment would you consider your business vertical to be most closely aligned to?",
-        "answer": ["Core Insurance"]
-      }
+    {
+      "id":3,
+      "name": "Competitive Advantage",
+      "applicationTypes": ["Predictive Analytics", "AI-Powered Products", "Market Intelligence"],
+      "horizon": { "period": "FY27", "number": 3 },
+      "infoExposure": "Confidential",
+      "dataSensitivity": "Very High",
+      "complexityOfUsage": "High",
+      "riskRating": 4,
+      "opportunities": [
+        "Leverage AI for faster, data-driven decision making",
+        "Develop AI-powered products to differentiate from competitors"
+      ],
+      "suggestedRoute": "shape",
+      "suggestedReuse": "platform",
+      "reasoning": [
+        "Shaping a comprehensive AI platform can provide a foundation for multiple competitive advantage applications, allowing for scalability and consistent innovation.",
+        "Shaping a comprehensive AI platform can provide a foundation for multiple competitive advantage applications, allowing for scalability and consistent innovation."
+      ]
     },
-    "app_name": "ClaimsDecisionAI",
-    "enablement_route": "Compose with Builders",
-    "potential_app_reuse": ["GenAI Claims assistant", "New Relic AI", "Appian"],
-    "data_advantage": "high",
-    "ip_advantage": "high",
-    "id": "3"
-  }
-]
+    {
+      "id":4,
+      "name": "Reporting Intelligence",
+      "applicationTypes": ["Automated Reporting", "Data Visualization", "Real-time Analytics"],
+      "horizon": { "period": "FY25", "number": 1 },
+      "infoExposure": "Internal",
+      "dataSensitivity": "Medium",
+      "complexityOfUsage": "Low",
+      "riskRating": 2,
+      "opportunities": [
+        "Generate automated, insightful reports from complex data sets",
+        "Provide real-time analytics dashboards for better visibility"
+      ],
+      "suggestedRoute": "compose",
+      "suggestedReuse": "existing app",
+      "reasoning": [
+        "Composing AI capabilities into existing reporting tools can quickly enhance intelligence without requiring extensive new development or training.",
+        "Composing AI capabilities into existing reporting tools can quickly enhance intelligence without requiring extensive new development or training."
+      ]
+    },
+    {
+      "id":5,
+      "name": "Technology Development",
+      "applicationTypes": ["AI Research", "Machine Learning Integration", "AI Infrastructure"],
+      "horizon": { "period": "FY27", "number": 3 },
+      "infoExposure": "Confidential",
+      "dataSensitivity": "High",
+      "complexityOfUsage": "Very High",
+      "riskRating": 5,
+      "opportunities": [
+        "Accelerate R&D processes with AI-assisted simulations",
+        "Implement machine learning models to improve existing systems"
+      ],
+      "suggestedRoute": "shape",
+      "suggestedReuse": "platform",
+      "reasoning": [
+        "Shaping a robust AI development platform will provide the necessary infrastructure and tools for ongoing technology advancement and integration across various applications.",
+        "Shaping a robust AI development platform will provide the necessary infrastructure and tools for ongoing technology advancement and integration across various applications."
+      ]
+    }
+  ]

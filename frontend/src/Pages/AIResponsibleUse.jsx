@@ -1,36 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import Loader from 'common/Loader';
 import Result from "components/Result/Result";
 import Breadcrumb from "components/Breadcrumb/Breadcrumb";
-import useAxios from "hooks/useAxios"
-import AIResponsibleUsePPT from "../assets/ppts/ai_responsible_use.pptx";
+import { useApp } from "context/AppContext";
 
 function AIResponsibleUse() {
-  const { getCall } = useAxios();
-  const navigate = useNavigate();
-  const [responsibleAIArea, setResponsibleAIArea] = useState([]);
-  
-  useEffect(()=>{
-    const userId = localStorage.getItem("userid");
-    if(userId === null || userId === undefined || userId === "" ){
-      navigate("/")
-    }
-    getCall("fetch-ai-use", {'user-id': userId}).then((result)=>{
-      setResponsibleAIArea(result.data)
-    })
-    // eslint-disable-next-line
-  },[])
-  
-  if(responsibleAIArea.length > 0){
-    return (
-      <>
-          <Breadcrumb pageName="AI Responsible Use" ppt={AIResponsibleUsePPT}/>
-          <Result step={2} resultValues={responsibleAIArea}/>
-      </>
-    )
-  }
-  return <Loader />
+
+  const {
+    responsibleAIUse,
+  } = useApp();
+
+  return (
+    <>
+        <Breadcrumb pageName="AI Responsible Use" />
+        <Result step={2} resultValues={responsibleAIUse}/>
+    </>
+  )
 }
 
 export default AIResponsibleUse

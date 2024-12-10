@@ -1,0 +1,15 @@
+{
+  "businessContext": {
+    "persona": "Marketing Manager",
+    "businessVertical": "Retail",
+    "winningAspiration": "Become the market leader in eco-friendly products."
+  },
+  "focusAreas": [
+    {
+      "name": "Product Development",
+      "priorityOutcome": "Increase customer satisfaction scores by 20%",
+      "measurableTarget": "Achieve a Net Promoter Score (NPS) of 75 by Q4",
+      "risksAndDependencies": "Risk of supply chain disruptions; dependent on timely software updates."
+    }
+  ]
+}

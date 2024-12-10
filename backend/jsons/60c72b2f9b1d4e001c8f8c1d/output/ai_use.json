@@ -1,6 +1,6 @@
 [
     {
-      "name": "Customer Value",
+      "name": "Operational Efficiency",
       "applicationTypes": ["Process Automation", "Resource Optimization", "Predictive Maintenance"],
       "horizon": { "period": "Everyday Use", "number": 1 },
       "infoExposure": "Internal",
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "name": "Operational Efficiency",
+      "name": "Customer Value",
       "applicationTypes": ["Personalization", "Chatbots", "Recommendation Systems"],
       "horizon": { "period": "Augment", "number": 2 },
       "infoExposure": "External",

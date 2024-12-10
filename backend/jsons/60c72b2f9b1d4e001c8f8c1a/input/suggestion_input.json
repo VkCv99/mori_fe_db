@@ -1,32 +1,45 @@
 {
   "message": [
     {
-      "text": "Faster claim processing by a claims manager. Faster claim classification/segmentation by a claims manager.",
-      "isBot": false,
-      "value_area": "Operational Efficiency",
-      "question": "Could you please provide a few examples of implementing operational efficiency?",
-      "answered_examples": "Faster claim processing by a claims manager. Faster claim classification/segmentation by a claims manager."
+      "id": "1729686920903",
+      "text": "Could you please provide a few examples of implementing operational efficiency?",
+      "isBot": true,
+      "examples": [
+        "Faster claim processing by a claims manager.",
+        "Faster claim classification/segmentation by a claims manager.",
+        "Quicker replies to positive emails by a sales manager.",
+        "Faster conversions of meetings by a sales manager."
+      ]
     },
     {
-      "text": "Faster claim processing by a claims manager. Faster claim classification/segmentation by a claims manager.",
-      "isBot": false,
-      "value_area": "Customer Value",
-      "question": "Could you please provide a few examples of enhancing customer value?",
-      "answered_examples": "Faster claim processing by a claims manager. Faster claim classification/segmentation by a claims manager."
+      "text": "Could you please provide a few examples of implementing operational efficiency?",
+      "isBot": false
     },
     {
-      "text": "Faster claim processing by a claims manager. Faster claim classification/segmentation by a claims manager.",
-      "isBot": false,
-      "value_area": "Competitive Advantage",
-      "question": "Could you please provide a few examples of achieving competitive advantage?",
-      "answered_examples": "Faster claim processing by a claims manager. Faster claim classification/segmentation by a claims manager."
+      "id": "1729686938078",
+      "text": "Could you please provide a few examples of enhancing customer value?",
+      "isBot": true,
+      "examples": [
+        "Implementing customer feedback loops.",
+        "Offering personalized experiences based on customer data."
+      ]
     },
     {
-      "text": "Faster claim processing by a claims manager. Faster claim classification/segmentation by a claims manager.",
-      "isBot": false,
-      "value_area": "Employee Satisfaction",
-      "question": "Could you please provide a few examples of enhancing employee satisfaction?",
-      "answered_examples": "Faster claim processing by a claims manager. Faster claim classification/segmentation by a claims manager."
+      "text": "Could you please provide a few examples of implementing operational efficiency?",
+      "isBot": false
+    },
+    {
+      "id": "1729686943757",
+      "text": "Could you please provide a few examples of achieving competitive advantage?",
+      "isBot": true,
+      "examples": [
+        "Developing unique selling propositions in marketing.",
+        "Leveraging exclusive partnerships."
+      ]
+    },
+    {
+      "text": "Could you please provide a few examples of implementing operational efficiency?",
+      "isBot": false
     }
   ]
 }

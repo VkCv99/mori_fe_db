@@ -12,7 +12,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const sidebar = useRef(null);
 
   const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
-  // eslint-disable-next-line
   const [sidebarExpanded, setSidebarExpanded] = useState(
     storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true'
   );
@@ -62,7 +61,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-center gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/">
-          <img src={Mori} alt="Logo" width="100px" className="filter brightness-0 invert" />
+          {/* <img src={Mori} alt="Logo" width="100px" className="filter brightness-0 invert" /> */}
         </NavLink>
 
         <button
@@ -104,7 +103,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 <NavLink
                   to="/business-context"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-light-gray hover:text-primary ${
-                    pathname === "/business-context" &&
+                    pathname === "/" &&
                     'bg-light-gray text-primary'
                   }`}
                 >
@@ -117,65 +116,29 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               {/* <!-- Menu Item Profile --> */}
               <li>
                 <NavLink
-                  to="/value-areas"
+                  to="/linked-ai-value"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-light-gray hover:text-primary ${
-                    (pathname.includes('value-areas') || pathname.includes("opportunities")) && 'bg-light-gray text-primary'
+                    pathname.includes('linked-ai-value') && 'bg-light-gray text-primary'
                   }`}
                 >
                   <Network className="w-6 h-6 text-white" />
                   Linked AI Value
                 </NavLink>
-
-                <div className="ml-4 mt-2 space-y-1  shadow-md rounded-sm ">
-                  <ul className='list-disc list-inside	'>
-                      <NavLink
-                        to="/value-areas"
-                        className={`block px-4 py-2 text-bodydark1 hover:bg-light-gray hover:text-primary ${pathname.includes('value-areas') && "bg-light-gray text-primary"}`}
-                      >
-                        <li>Value Areas</li>
-                      </NavLink>
-                  
-                    <NavLink
-                      to="/opportunities"
-                      className={`block px-4 py-2 text-bodydark1 hover:bg-light-gray hover:text-primary ${pathname.includes('opportunities') && "bg-light-gray text-primary"}`}
-                    >
-                      <li>Opportunities</li>
-                    </NavLink>
-                  </ul>
-                  
-                </div>
               </li>
-            
               {/* <!-- Menu Item Profile --> */}
+
               {/* <!-- Menu Item Tables --> */}
               <li>
                 <NavLink
-                  to="/ai-applications"
+                  to="/ai-responsible-use"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-light-gray hover:text-primary ${
-                    (pathname.includes('ai-use') || pathname.includes('ai-applications')) && 'bg-light-gray text-primary'
+                    pathname.includes('ai-responsible-use') && 'bg-light-gray text-primary'
                   }`}
                 >
                   
                   <ShieldCheck className="w-6 h-6 text-white" />
                   AI Responsible Use
                 </NavLink>
-
-                <div className="ml-4 mt-2 space-y-1  shadow-md rounded-sm ">
-                  <ul className='list-disc list-inside	'>
-                    <NavLink
-                      to="/ai-applications"
-                      className={`block px-4 py-2 text-bodydark1 hover:bg-light-gray hover:text-primary ${pathname.includes('ai-applications') && "bg-light-gray text-primary"}`}
-                    >
-                      <li>AI Applications</li>
-                    </NavLink>
-                    <NavLink
-                      to="/ai-use"
-                      className={`block px-4 py-2 text-bodydark1 hover:bg-light-gray hover:text-primary ${pathname.includes('ai-use') && "bg-light-gray text-primary"}`}
-                    >
-                      <li>AI Use</li>
-                    </NavLink>
-                  </ul>
-                </div>
               </li>
               {/* <!-- Menu Item Tables --> */}
 
@@ -184,30 +147,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 <NavLink
                   to="/ai-tech-enablement"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-light-gray hover:text-primary ${
-                    (pathname.includes('ai-tech-enablement') || pathname.includes('final-result')) &&
+                    pathname.includes('ai-tech-enablement') &&
                     'bg-light-gray text-primary'
                   }`}
                 >
                   <Cpu className="w-6 h-6 text-white" />
                   AI Tech Enablement
                 </NavLink>
-
-                <div className="ml-4 mt-2 space-y-1 shadow-md rounded-sm ">
-                  <ul className='list-disc list-inside	'>
-                    <NavLink
-                      to="/ai-tech-enablement"
-                      className={`block px-4 py-2 text-bodydark1 hover:bg-light-gray hover:text-primary ${pathname.includes('ai-tech-enablement') && "bg-light-gray text-primary"}`}
-                    >
-                      <li>Tech Enablement</li> 
-                    </NavLink>
-                    <NavLink
-                      to="/final-result"
-                      className={`block px-4 py-2 text-bodydark1 hover:bg-light-gray hover:text-primary ${pathname.includes('final-result') && "bg-light-gray text-primary"}`}
-                    >
-                      <li>Result</li>
-                    </NavLink>
-                  </ul>
-                </div>
               </li>
               {/* <!-- Menu Item Settings --> */}
             </ul>

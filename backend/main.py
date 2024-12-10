@@ -8,8 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, validator
 from typing import List, Dict, Union, Optional
 from pptx import Presentation
-from signup import generate_next_id, create_user_folders, save_users
-from ppt import create_slide
+from pptx.util import Inches, Pt
+from pptx.chart.data import CategoryChartData
+from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION, XL_DATA_LABEL_POSITION
+from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
+from pptx.dml.color import RGBColor
 
 app = FastAPI()
 
@@ -42,6 +45,181 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+def text_fits(text_frame, max_size):
+    """
+    Check if the text fits within the text frame.
+    This is an approximation and may not be 100% accurate in all cases.
+    """
+    if not text_frame.text:
+        return True
+
+    text_frame.fit_text(font_family='Arial', max_size=max_size, bold=False, italic=False)
+    for paragraph in text_frame.paragraphs:
+        for run in paragraph.runs:
+            if run.font.size < 6:  # If font size is too small, consider it doesn't fit
+                return False
+    return True
+
+def fit_text(text_frame, text_type='normal'):
+    """
+    Fit text into the text frame by adjusting size and applying wrapping.
+    
+    :param text_frame: The text frame to fit text into
+    :param text_type: Type of text ('title', 'subtitle', or 'normal')
+    """
+    if text_type == 'title':
+        max_size, min_size = 24, 20
+    elif text_type == 'subtitle':
+        max_size, min_size = 14, 12
+    else:  # normal text
+        max_size, min_size = 11, 9
+
+    text_frame.word_wrap = True
+    text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+
+    # Start with the maximum size
+    size = max_size
+    for paragraph in text_frame.paragraphs:
+        paragraph.font.size = Pt(size)
+
+    while not text_fits(text_frame, size) and size > min_size:
+        size = max(size * 0.9, min_size)  # Reduce by 10% each iteration
+        for paragraph in text_frame.paragraphs:
+            paragraph.font.size = size
+
+    # If still doesn't fit, try to wrap (for titles and subtitles)
+    if not text_fits(text_frame, size) and text_type in ['title', 'subtitle']:
+        words = text_frame.text.split()
+        mid = len(words) // 2
+        text_frame.text = ' '.join(words[:mid]) + '\n' + ' '.join(words[mid:])
+
+        # Readjust size after wrapping
+        while not text_fits(text_frame, size) and size > min_size:
+            size = max(size * 0.9, min_size)
+            for paragraph in text_frame.paragraphs:
+                paragraph.font.size = size
+
+    # For normal text, if it still doesn't fit, truncate with ellipsis
+    if not text_fits(text_frame, size) and text_type == 'normal':
+        while not text_fits(text_frame, size) and len(text_frame.text) > 3:
+            text_frame.text = text_frame.text[:-4] + '...'
+
+    return Pt(size)
+
+def create_slide(prs:Presentation, slide_data:SlideData):
+    slide = prs.slides.add_slide(prs.slide_layouts[1])
+
+    # Title
+    title = slide.shapes.title
+    title.text = slide_data.title
+    fit_text(title.text_frame, 'title')
+
+    content_top = Inches(1.5)
+    for item in slide_data.content:
+        if item.type == 'text':
+            left, width, height = Inches(0.5), Inches(9), Inches(0.5)
+            tf = slide.shapes.add_textbox(left, content_top, width, height).text_frame
+            tf.text = item.value
+            fit_text(tf, 'normal')
+            tf.paragraphs[0].alignment = PP_ALIGN.LEFT
+            content_top += height + Inches(0.1)
+
+        elif item.type == 'bullet':
+            shapes = slide.shapes
+            body_shape = shapes.placeholders[1]
+            tf = body_shape.text_frame
+            tf.text = item.value[0]
+            for bullet in item.value[1:]:
+                p = tf.add_paragraph()
+                p.text = bullet
+                p.level = 1
+            fit_text(tf, 'normal')
+            content_top = Inches(5.5)  # Move to bottom half of slide
+
+        elif item.type == 'graph':
+            if item.graphType == 'bar':
+                add_chart(slide, item.data, XL_CHART_TYPE.COLUMN_CLUSTERED)
+            elif item.graphType == 'pie':
+                add_chart(slide, item.data, XL_CHART_TYPE.PIE)
+            content_top = Inches(15)  # Move to bottom half of slide
+        elif item.type == 'table':
+            headers = item.headers
+            data = item.data
+            rows, cols = len(data) + 1, len(headers)  # +1 for header row
+            left, top, width, height = Inches(0.5), content_top, Inches(9), Inches(0.5 * rows)
+            table = slide.shapes.add_table(rows, cols, left, top, width, height).table
+
+            # Populate the header row
+            for col, header in enumerate(headers):
+                cell = table.cell(0, col)
+                cell.text = str(header)
+                cell.fill.solid()
+                cell.fill.fore_color.rgb = RGBColor(200, 200, 200)
+                cell.text_frame.paragraphs[0].font.bold = True
+                cell.text_frame.paragraphs[0].font.size = Pt(10)
+
+            # Populate the data rows
+            for row, row_data in enumerate(data, start=1):
+                for col, cell_data in enumerate(row_data):
+                    cell = table.cell(row, col)
+                    cell.text = str(cell_data)
+                    cell.text_frame.paragraphs[0].font.size = Pt(10)
+
+
+            content_top += height + Inches(0.1)
+
+def add_chart(slide, data, chart_type):
+    chart_data = CategoryChartData()
+    chart_data.categories = [item['name'] for item in data]
+    chart_data.add_series('Series 1', [item['value'] for item in data])
+
+    # Adjust chart size and position
+    x, y = Inches(2.5), Inches(3)
+    cx, cy = Inches(5), Inches(2.5)  # Reduced size
+    chart = slide.shapes.add_chart(
+        chart_type, x, y, cx, cy, chart_data
+    ).chart
+
+    chart.has_legend = True
+    chart.legend.include_in_layout = False
+    chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+    chart.legend.font.size = Pt(8)  # Adjust legend font size
+
+    # Adjust font sizes and other chart properties
+    if chart.chart_title:
+        chart.chart_title.text_frame.text = "Chart Title"  # You can customize this
+        chart.chart_title.text_frame.paragraphs[0].font.size = Pt(14)
+
+    # Adjust series data labels
+    for series in chart.series:
+        if hasattr(series, 'data_labels'):
+            series.data_labels.font.size = Pt(8)
+            if chart_type != XL_CHART_TYPE.PIE:
+                series.data_labels.position = XL_DATA_LABEL_POSITION.CENTER
+
+    # Adjust axes based on chart type
+    if chart_type != XL_CHART_TYPE.PIE:
+        # For charts with category and value axes
+        if hasattr(chart, 'category_axis') and hasattr(chart.category_axis, 'tick_labels'):
+            chart.category_axis.tick_labels.font.size = Pt(8)
+
+        if hasattr(chart, 'value_axis') and hasattr(chart.value_axis, 'tick_labels'):
+            chart.value_axis.tick_labels.font.size = Pt(8)
+
+    else:
+        # For pie charts
+        chart.plots[0].has_data_labels = True
+        data_labels = chart.plots[0].data_labels
+        data_labels.font.size = Pt(8)
+        data_labels.position = XL_DATA_LABEL_POSITION.CENTER
+
+    # Additional formatting
+    plot = chart.plots[0]
+    plot.has_data_labels = True
+    if hasattr(plot, 'data_labels'):
+        plot.data_labels.font.size = Pt(8)
+        plot.data_labels.font.color.rgb = RGBColor(0, 0, 0)  # Black color
+
 def ensure_directory(path):
     os.makedirs(path, exist_ok=True)
 
@@ -69,9 +247,6 @@ def read_from_json(path: str, filename: str) -> Tuple[Dict, int, str]:
         return {}, 500, f"Error reading file: {str(e)}"
 
 def filter_slides(slides, selected_cards):
-    if not selected_cards:
-        return {"slides": slides}
-
     filtered_slides = []
 
     for slide in slides:
@@ -113,225 +288,18 @@ def user_exists(user_id):
 
     return None
 
-def convert_ai_use_json_list(input_list):
-    converted_list = []
-    
-    for input_json in input_list:
-        # Extract risks dictionary for easier access
-        risks = input_json.get('risks', {})
-
-        converted_json = {
-            "name": input_json.get('value_area_name'),
-            "applicationTypes": input_json.get('category_name'),
-            "horizon": input_json.get('ai_use_class')+ " " +input_json.get('horizonClassification'),
-            "infoExposure": risks.get('infoExposure'),
-            "dataSensitivity": risks.get('infoSensitivity'),
-            "complexityOfUsage": input_json.get('riskComplexity'),
-            "riskRating": risks.get('riskRating'),
-            "description":input_json.get('description'),
-            "reasoning": [risks.get('reasoning')] if risks.get('reasoning') else [],
-            "level_of_specialisation_interactionact":risks.get('level_of_specialisation_interaction'),
-            "app_operation":risks.get('app_operation'),
-        }
-        
-        converted_list.append(converted_json)
-    return converted_list
-
-def extract_applications(data):
-    applications = []
-    id_counter = 1  # Initialize the counter
-
-    for key, value in data.items():  # Changed from item() to items() to fix syntax
-        for application in value['applications']:
-            application['id'] = id_counter  # Add the incremental id
-            applications.append(application)  # Use append instead of extend
-            id_counter += 1  # Increment the counter for the next application
-
-    return applications
-
-def transform_tech_reasoning_json(user_id):
-
-    input_data, input_code, input_message = read_from_json(f"./jsons/{user_id}/output/", "tech_quad_dict.json")
-    question_data, question_code, question_message = read_from_json(f"./jsons/{user_id}/output/", "tech_quad_question.json")
-
-    if input_code != 200:
-        raise HTTPException(status_code=input_code, detail=input_message)
-    if question_code != 200:
-        raise HTTPException(status_code=question_code, detail=question_message)
-
-    if input_data is None:
-        return
-
-    transformed_data = []
-    
-    for _, item in input_data.items():
-        transformed_item = {
-            "title": f"{item['new_app_name']} - {item['category_name']}",
-            "description": item['description'] if 'description' in item else '',
-            "defaultInfo": [
-                {
-                    "icon": "🧹",
-                    "title": "Linked AI Value",
-                    "options": [
-                        {"value": item['value_area_name'], "selected": True}
-                    ]
-                },
-                {
-                    "icon": "📊",
-                    "title": "AI Responsiible Use",
-                    "options": [
-                        {"value": "Everyday use", "selected": item['ai_use_class'] == "Everyday use"},
-                        {"value": "Augmentation", "selected": item['ai_use_class'] == "Augmentation"},
-                        {"value": "Transformation", "selected": item['ai_use_class'] == "Transformation"}
-                    ]
-                },
-                {
-                    "icon": "🔒",
-                    "title": "Quadrant Mapping",
-                    "options": [
-                        {"value": "Quadrant-1", "selected": item['ai_enablement_quadrant'] == "Quadrant 1"},
-                        {"value": "Quadrant-2", "selected": item['ai_enablement_quadrant'] == "Quadrant 2"},
-                        {"value": "Quadrant-3", "selected": item['ai_enablement_quadrant'] == "Quadrant 3"},
-                        {"value": "Quadrant-4", "selected": item['ai_enablement_quadrant'] == "Quadrant 4"}
-                    ]
-                }
-            ],
-            "quadrant_reasoning": item['quadrant_reasoning'] if 'quadrant_reasoning' in item else '',
-            "questions":question_data
-        }
-        transformed_data.append(transformed_item)
-    
-    return  transformed_data
-
-def create_the_ppt(prs, data = None):
-    prs = Presentation()
-    # ======================================== slide_1 ================================================== table
-    app_list = list(data.items())
-    for i in range(0, len(app_list), 3):
-        
-        others = prs.slide_masters[2].slide_layouts[4] 
-        slide = prs.slides.add_slide(others)
-        subheading = slide.placeholders[13]
-        subheading.text = ''
-        
-        title = slide.shapes.title
-        title.text = 'AI App Names and Descriptions'
-        
-        # Remove all shapes except for the title and subtitle
-        for shape in slide.shapes:
-            if not shape.has_text_frame or shape == slide.shapes.title or shape == slide.placeholders[13]:
-                continue
-            sp = shape._element
-            sp.getparent().remove(sp)
-        
-        rows = min(3, len(app_list) - i) + 1  # Number of apps in this table + header row
-        cols = 2
-        left = Inches(0.755)
-        top = Inches(2.3)
-        width = Inches(17.5)
-        height = Inches(1.2)
-        
-        table_shape = slide.shapes.add_table(rows, cols, left, top, width, height)
-        table = table_shape.table
-        
-        # Set column widths
-        table.columns[0].width = Inches(3.75)
-        table.columns[1].width = Inches(13.25)
-        
-        # Set table headers
-        table.cell(0, 0).text = 'App Name'
-        table.cell(0, 1).text = 'Description'
-        
-        # Add data to the table
-        for j in range(min(3, len(app_list) - i)):
-            app_id, app_data = app_list[i + j]
-            table.cell(j + 1, 0).text = app_data['new_app_name']
-            table.cell(j + 1, 1).text = app_data['description']
-            
-    # ======================================== slide_2 ================================================== 
-    # Add slides with tables for each application (up to 5 rows per table)
-    app_list = list(data.items())
-    for i in range(0, len(app_list), 5):
-        others = prs.slide_masters[2].slide_layouts[4] 
-        slide = prs.slides.add_slide(others)
-        title = slide.shapes.title
-        title.text = "AI Applications Summary"
-        subheading = slide.placeholders[13]
-        subheading.text = 'Short summary of applications discussed and finalised throughout the tool'
-        
-        # Remove all shapes except for the title and subtitle
-        for shape in slide.shapes:
-            if not shape.has_text_frame or shape == slide.shapes.title or shape == slide.placeholders[13]:
-                continue
-            sp = shape._element
-            sp.getparent().remove(sp)
-        
-        rows = min(5, len(app_list) - i) * 2 + 1  # Number of apps in this table * 2 (for Class and Reasoning) + header row  # Number of apps in this table + header row
-        cols = 5
-        left = Inches(0.775)
-        top = Inches(1.9)
-        width = Inches(17.5)
-        height = Inches(1.2)
-        
-        table_shape = slide.shapes.add_table(rows, cols, left, top, width, height)
-        table = table_shape.table
-        
-        # Set column widths
-        table.columns[0].width = Inches(1.5)
-        table.columns[1].width = Inches(3.55)
-        table.columns[2].width = Inches(3.55)
-        table.columns[3].width = Inches(3.55)
-        table.columns[4].width = Inches(3.55)
-        
-        # Set table headers
-        table.cell(0, 0).text = 'Sr. No.'
-        table.cell(0, 1).text = 'App Name'
-        table.cell(0, 2).text = 'Linked AI Value'
-        table.cell(0, 3).text = 'AI Responsible Use'
-        table.cell(0, 4).text = 'AI Tech Enablement'
-        
-        # Add data to the table
-        for j in range(min(5, len(app_list) - i)):
-            app_id, app_data = app_list[i + j]
-            # Class row
-            table.cell(j * 2 + 1, 0).text = str(app_id)
-            table.cell(j * 2 + 1, 1).text = app_data['new_app_name']
-            table.cell(j * 2 + 1, 2).text = app_data['value_area_name']
-            table.cell(j * 2 + 1, 3).text = app_data['ai_use_class']
-            table.cell(j * 2 + 1, 4).text = app_data['enablement_route']
-            # Reasoning row
-            table.cell(j * 2 + 2, 2).text = "" #app_data['description']
-            table.cell(j * 2 + 2, 3).text = app_data['category_name']
-            table.cell(j * 2 + 2, 4).text = app_data['ai_enablement_quadrant']
-
-    # ======================================== slide_2 ==================================================
-    divider_slide_layout = prs.slide_masters[0].slide_layouts[2] 
-    slide = prs.slides.add_slide(divider_slide_layout)
-    title = slide.placeholders[14]
-    title.text = "Thank You"
-    
-    title_text_frame = title.text_frame
-    title_text_frame.text = "Thank You"
-    title_text_frame.paragraphs[0].font.color.rgb = RGBColor(255, 255, 255)
-    
-    return prs
-
 # Pydantic model for request body
 class DataModel(BaseModel):
     data: dict
-
 class UserLoginData(BaseModel):
     email: str
     password: str
 class UserLogin(BaseModel):
     data: UserLoginData
 
-class DataModelList(BaseModel):
-    data: list
-
 class GeneratePPTRequest(BaseModel):
     type: str  
-    selected_cards: List[dict] 
+    selected_cards: List[str] 
 
 @app.post("/save-business-context")
 async def save_business_context(data: DataModel, User_id: str = Header(...)):
@@ -340,113 +308,75 @@ async def save_business_context(data: DataModel, User_id: str = Header(...)):
         raise HTTPException(status_code=403, detail="User not found")
 
     save_to_json(f"./jsons/{User_id}/input/", "business_context.json", data.data)
+    linked_ai_vlaues, status_code, error_message = read_from_json(f"./jsons/{User_id}/output/", "linked_ai_vlaues.json")
 
-    suggestion_output, status_code, error_message = read_from_json(f"./jsons/{User_id}/output/", "suggestion_output.json")
     if status_code != 200:
         raise HTTPException(status_code=status_code, detail=error_message)
-    return suggestion_output
+    return linked_ai_vlaues
 
 @app.post("/save-suggestions")
 async def save_suggestions(data: DataModel, User_id: str = Header(...)):
+    print("user id", User_id)
     user_check_result = user_exists(User_id)
     if user_check_result is None:
         raise HTTPException(status_code=403, detail="User not found")
+
     save_to_json(f"./jsons/{User_id}/input/", "suggestion_input.json", data.data)
 
     opportunities, opp_status, opp_error = read_from_json(f"./jsons/{User_id}/output/", "opportunities.json")
-
-    if opp_status != 200:
-        raise HTTPException(status_code=opp_status, detail=opp_error)
-
-    return opportunities
-
-@app.get("/fetch-opportunities")
-async def fetch_opportunities(User_id: str = Header(...)):
-    user_check_result = user_exists(User_id)
-    if user_check_result is None:
-        raise HTTPException(status_code=403, detail="User not found")
-
-    opportunities, opp_status, opp_error = read_from_json(f"./jsons/{User_id}/output/", "opportunities.json")
-
-    if opp_status != 200:
-        raise HTTPException(status_code=opp_status, detail=opp_error)
-
-    return opportunities
-    
-@app.get("/fetch-ai-use")
-async def fetch_ai_use(User_id: str = Header(...)):
-    user_check_result = user_exists(User_id)
-    if user_check_result is None:
-        raise HTTPException(status_code=403, detail="User not found")
-
-    ai_use, ai_status, ai_error = read_from_json(f"./jsons/{User_id}/output/","ai_use_gpt_output.json")
-    result = convert_ai_use_json_list(ai_use["applications"])
-    return result
-
-@app.get("/fetch-ai-strategy")
-async def fetch_ai_strategy(User_id: str = Header(...)):
-    user_check_result = user_exists(User_id)
-    if user_check_result is None:
-        raise HTTPException(status_code=403, detail="User not found")
-
-    ai_strategy, ai_status, ai_error = read_from_json(f"./jsons/{User_id}/output/", "ai_strategy_output.json")
-    application_list = extract_applications(ai_strategy)
-    return application_list
-
-@app.get("/fetch-tech-reasoning")
-async def fetch_tech_reasoning(User_id: str = Header(...)):
-    user_check_result = user_exists(User_id)
-    if user_check_result is None:
-        raise HTTPException(status_code=403, detail="User not found")
-    transformed_data = transform_tech_reasoning_json(User_id)
-    save_to_json(f"./jsons/{User_id}/output/", "tech_enablement_values.json", transformed_data)
-
-    return transformed_data
-
-@app.post("/save-ai-strategy")
-async def save_ai_strategy(data: DataModelList, User_id: str = Header(...)):
-    user_check_result = user_exists(User_id)
-    if user_check_result is None:
-        raise HTTPException(status_code=403, detail="User not found")
-
-    save_to_json(f"./jsons/{User_id}/input/", "ai_strategy_input.json", data.data)
     ai_use, ai_status, ai_error = read_from_json(f"./jsons/{User_id}/output/", "ai_use.json")
+    tech_enablement, tech_status, tech_error = read_from_json(f"./jsons/{User_id}/output/", "tech_enablement_values.json")
+
+    if opp_status != 200:
+        raise HTTPException(status_code=opp_status, detail=opp_error)
     if ai_status != 200:
-        raise HTTPException(status_code=ai_status, detail=error_message)
-    return ai_use
+        raise HTTPException(status_code=ai_status, detail=ai_error)
+    if tech_status != 200:
+        raise HTTPException(status_code=tech_status, detail=tech_error)
+
+    return {
+        "opportunities": opportunities,
+        "ai_responsible_use": ai_use,
+        "tech_enablement": tech_enablement
+    }
 
 @app.post("/save-tech-reasoning")
-async def save_tech_reasoning(data: DataModel, User_id: str = Header(...)):
+async def save_business_context(data: DataModel, User_id: str = Header(...)):
     user_check_result = user_exists(User_id)
     if user_check_result is None:
         raise HTTPException(status_code=403, detail="User not found")
 
     save_to_json(f"./jsons/{User_id}/input/", "tech_reasoning.json", data.data)
-    final_result, status_code, error_message = read_from_json(f"./jsons/{User_id}/output/", "result.json")
+    tech_reasoning_result, status_code, error_message = read_from_json(f"./jsons/{User_id}/output/", "result.json")
     if status_code != 200:
         raise HTTPException(status_code=status_code, detail=error_message)
-    return final_result
+    return tech_reasoning_result
 
 @app.post("/generate-ppt")
 async def generate_ppt(request: GeneratePPTRequest, User_id: str = Header(...)):
-    user_check_result = user_exists(User_id)
-    if user_check_result is None:
-        raise HTTPException(status_code=403, detail="User not found")
-
+    # json_data, status_code, error_message = read_from_json("./jsons/output/", "short_table.json")
     if request.type.lower() not in ["short", "comprehensive"]:
         raise HTTPException(status_code=400, detail="Invalid type. Use 'short' or 'comprehensive'.")
-    
+
     json_file = "short_table.json" if request.type == "short" else "table.json"
     filename = "short_presentation.pptx" if request.type == "short" else "presentation.pptx"
 
-    save_to_json(f"./jsons/{User_id}/input/", "final_selected_result.json", request.selected_cards)
-    # json_data, status_code, error_message = read_from_json(f"./jsons/{User_id}/output/", json_file)
-    json_data, status_code, error_message = read_from_json(f"./jsons/{User_id}/gpt_output/", "final_result.json")
+    json_data, status_code, error_message = read_from_json(f"./jsons/{User_id}/output/", json_file)
+
+    # Filter slides
+    filtered_json_data = filter_slides(json_data.get("slides", []), request.selected_cards)
 
     if status_code != 200:
         raise HTTPException(status_code=status_code, detail=error_message)
 
-    prs = create_the_ppt(prs, json_data)
+    try:
+        presentation_data = PresentationData(**filtered_json_data)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON structure: {str(e)}")
+
+    prs = Presentation()
+    for slide_data in presentation_data.slides:
+        create_slide(prs, slide_data)
 
     ppt_io = io.BytesIO()
     prs.save(ppt_io)
@@ -469,39 +399,9 @@ def login(data: UserLogin):
             del user_details['password']
             return {"message": "Login successful", "data": user_details}
     raise HTTPException(status_code=400, detail="Invalid email or password")
-
-@app.post("/signup")
-async def signup(data: DataModel):
-    users, status_code, error_message = read_from_json("./jsons/users/", "users.json")
-    
-    if any(existing_user['email'] == data.data["email"] for existing_user in users):
-        raise HTTPException(status_code=400, detail="User with this email already exists")
-    
-    if any(existing_user['name'] == data.data["name"] for existing_user in users):
-        raise HTTPException(status_code=400, detail="Username already taken")
-    
-    existing_ids = [u['id'] for u in users]
-    new_user_id = generate_next_id(existing_ids)
-    
-    new_user = {
-        "id": new_user_id,
-        "name": data.data["name"],
-        "email": data.data["email"],
-        "password": data.data["password"]  # Note: In production, hash the password!
-    }
-    
-    users.append(new_user)
-    # save_users(users)
-    save_to_json(f"./jsons/users/", "users.json", users)
-    
-    create_user_folders(new_user_id)
-    
-    return {"message": "User created successfully", "data": {"id":new_user["id"], "name":new_user["name"], "email":new_user["email"]}}
-
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the FastAPI application!"}
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)

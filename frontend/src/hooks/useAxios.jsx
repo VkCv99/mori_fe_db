@@ -16,7 +16,7 @@ const useAxios = () => {
             });
             return { success: true, data: response.data };
         } catch (err) {
-            return { success: false, error: err.response.data.detail || err.response.data.message || 'Error occurred' };
+            return { success: false, error: err.message || 'Error occurred' };
         } finally {
             setLoading(false);
         }
@@ -33,7 +33,7 @@ const useAxios = () => {
               const response = await axios.post(baseUrl + path, {"data": body}, config);
             return { success: true, data: response.data };
         } catch (err) {
-            return { success: false, error: err.response.data.detail || err.response.data.message || 'Error occurred' };
+            return { success: false, error: err.message || 'Error occurred' };
         } finally {
             setLoading(false);
         }

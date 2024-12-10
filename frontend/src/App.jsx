@@ -8,11 +8,9 @@ import BusinessContext from "Pages/BusinessContext"
 import LinkedAIValue from 'Pages/LinkedAIValue';
 import AITechEnablement from 'Pages/AITechEnablement';
 import AIResponsibleUse from 'Pages/AIResponsibleUse';
-import AIStrategy from 'Pages/AIStrategy'
-import LogIn from 'Pages/LogIn';
-import SignUp from 'Pages/SignUp';
-import Opportunities from 'Pages/Opportunities';
-import FinalResult from 'Pages/FinalResult';
+import LogInWithImage from 'Pages/LogInWithImage';
+import LogIn from 'Pages/LogIn'
+import Test from 'Pages/Test'
 
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -43,16 +41,13 @@ function App() {
     <>
       <AppProvider>
         <Routes>
-            <Route index element={<LogIn />} />
-            <Route path="sign-up" element={<SignUp />} />
+            <Route index element={<LogInWithImage />} />
             <Route element={<Wrapper/>}>
                 <Route path="business-context" element={<BusinessContext />} />
-                <Route path="value-areas" element={<LinkedAIValue />} />
-                <Route path="opportunities" element={<Opportunities />} />
-                <Route path="ai-applications" element={<AIStrategy />} />
-                <Route path="ai-use" element={<AIResponsibleUse />} />
+                <Route path="linked-ai-value" element={<LinkedAIValue />} />
+                <Route path="ai-responsible-use" element={<AIResponsibleUse />} />
                 <Route path="ai-tech-enablement" element={<AITechEnablement />} />
-                <Route path="final-result" element={<FinalResult />} />
+                <Route path="test" element={<Test />} />
             </Route>
         </Routes>
         </AppProvider>
