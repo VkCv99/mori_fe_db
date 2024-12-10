@@ -1,18 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { suggestions } from "JSONs/suggestions"
+
 
 // Create a context
 const AppContext = createContext();
 
 // Create a provider component
 export const AppProvider = ({ children }) => {
-  
-  const [defaultSuggestions, setDefaultSuggestions] = useState(suggestions);
+  const [defaultSuggestions, setDefaultSuggestions] = useState([]);
   const [defaultRecommendedSuggestions, setDefaultRecommendedSuggestions] = useState([]);
   const [LinkedAIArea, setLinkedAIArea] = useState([]);
-  const [responsibleAIUse, setResponsibelAIUse] = useState([]);
+  const [responsibleAIArea, setResponsibelAIArea] = useState([]);
   const [techEnableValues, setTechEnableValues] = useState([]);
-  const [userDetails, setUserDetails] = useState({});
+
 
   const handleDefaultSuggestions = (suggetions) => {
     setDefaultSuggestions(suggetions);
@@ -20,7 +19,7 @@ export const AppProvider = ({ children }) => {
 
   const handleResultValues = (values) => {
     setLinkedAIArea(values.opportunities);
-    setResponsibelAIUse(values.ai_responsible_use);
+    setResponsibelAIArea(values.ai_responsible_use);
     setTechEnableValues(values.tech_enablement)
   }
 
@@ -31,14 +30,12 @@ export const AppProvider = ({ children }) => {
 
   const value = {
     LinkedAIArea,
-    responsibleAIUse,
+    responsibleAIArea,
     techEnableValues,
     defaultSuggestions,
     defaultRecommendedSuggestions,
     handleDefaultSuggestions,
     handleResultValues,
-    userDetails,
-    setUserDetails,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

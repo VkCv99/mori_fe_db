@@ -16,7 +16,6 @@ const LinkedAIValue = () => {
     LinkedAIArea,
     handleResultValues,
     defaultRecommendedSuggestions,
-    userDetails,
   } = useApp();
 
   const {postCall} = useAxios()
@@ -47,7 +46,14 @@ const LinkedAIValue = () => {
   const handleSendMessage = () => {
     if (inputText.trim() === "") return;
 
-    const newMessage = { text: inputText, isBot: false };
+    const lastBotMessage = [...messages].reverse().find((msg) => msg.isBot);
+    const newMessage = { 
+      text: inputText, 
+      isBot: false,
+      value_area : lastBotMessage.area,
+      question : lastBotMessage.text, 
+      answered_examples : inputText,
+     };
     setMessages([...messages, newMessage]);
     setInputText("");
     // Check if this message is a response to the last bot message
@@ -82,7 +88,8 @@ const LinkedAIValue = () => {
 
   const fetchResults = async() => {
     if(allRecommendedResponded){
-      const result = await postCall("save-suggestions", {"message": messages}, {'user-id': userDetails.id});
+      const userMessage = messages.filter((item) => !item.isBot);
+      const result = await postCall("save-suggestions", {"message": userMessage});
       if(result.success){
         handleResultValues(result.data);
         setShowResult(true)
@@ -106,6 +113,7 @@ const LinkedAIValue = () => {
           ...prev,
           {
             id: (Date.now() + 1).toString(),
+            area:selectedSuggestions[selectedSuggestions.length - 1].area,
             text: selectedSuggestions[selectedSuggestions.length - 1].question,
             isBot: true,
             examples:

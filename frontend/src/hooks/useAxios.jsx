@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import axios from 'axios';
 
+const baseUrl = "http://localhost:8000/"
 const useAxios = () => {
     const [loading, setLoading] = useState(false);
-
-    const baseUrl = "http://localhost:8000/";
 
     const getCall = async (path, headers = {}, queryParams = {}) => {
         setLoading(true);
@@ -25,12 +24,8 @@ const useAxios = () => {
 
     const postCall = async (path, body = {}, headers = {}) => {
         setLoading(true);
-
         try {
-            const config = {
-                headers: headers
-              };
-              const response = await axios.post(baseUrl + path, {"data": body}, config);
+            const response = await axios.post(baseUrl+path, {"data":body}, { headers });
             return { success: true, data: response.data };
         } catch (err) {
             return { success: false, error: err.message || 'Error occurred' };
@@ -40,7 +35,7 @@ const useAxios = () => {
         // return { success: true, data: [] };
     };
 
-    return { getCall, postCall, loading, baseUrl };
+    return { getCall, postCall, loading };
 };
 
 export default useAxios;

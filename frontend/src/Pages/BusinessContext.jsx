@@ -10,7 +10,7 @@ import { useApp } from "context/AppContext";
 
 const BusinessContext = () => {
 
-    const { handleDefaultSuggestions, userDetails } = useApp();
+    const { handleDefaultSuggestions } = useApp();
     const navigate = useNavigate()
     const { postCall } = useAxios()
     const [mainInfo, setMainInfo] = useState({ persona: '', businessVertical: '', winningAspiration: '' });
@@ -28,10 +28,10 @@ const BusinessContext = () => {
     };
   
     const submitMainInfo = () => {
-      if (mainInfo.persona.trim() && mainInfo.businessVertical.trim() && mainInfo.winningAspiration.trim()) {
+      if (mainInfo.persona && mainInfo.businessVertical && mainInfo.winningAspiration) {
         setIsMainInfoSubmitted(true);
       } else {
-        toast.warn('Please fill all main info fields before submitting.');
+        alert('Please fill all main info fields before submitting.');
       }
     };
   
@@ -40,23 +40,18 @@ const BusinessContext = () => {
     };
   
     const addFocusArea = () => {
-      if (newFocusArea.name.trim() && 
-            newFocusArea.priorityOutcome.trim() && 
-            newFocusArea.measurableTarget.trim() && 
-            newFocusArea.risksAndDependencies.trim()) {
+      if (newFocusArea.priorityOutcome.trim() !== '') {
         setFocusAreas([...focusAreas, newFocusArea]);
         setNewFocusArea({ priorityOutcome: '', measurableTarget: '', risksAndDependencies: '', name:'' });
-      }else {
-        toast.warn('Please fill focus area fields before adding new focus area.');
       }
     };
   
     const handleSubmit = async(e) => {
       e.preventDefault();
       const data = {businessContext:mainInfo, focusAreas};
-      const result = await postCall("save-business-context", data, {'user-id': userDetails.id});
+      const result = await postCall("save-business-context", data);
       if(result.success){
-          console.log("result.data", result.data)
+          // handleDefaultSuggestions(suggestions)
           handleDefaultSuggestions(result.data)
           toast.success("your request has been summitted successfully")
           setTimeout(()=>{
@@ -65,8 +60,9 @@ const BusinessContext = () => {
       }else{
           toast.warn(`${result.error}`)
       }
+      
+      // Here you would typically send this data to a server or perform other actions
     };
-
   return (
     <>
       <Breadcrumb pageName="Business Context" />

@@ -2,7 +2,7 @@ import io
 import os
 import json
 from typing import Dict, Tuple
-from fastapi import FastAPI, HTTPException, Query, Header
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, validator
@@ -18,7 +18,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust this to your React app's URL
+    allow_origins=["http://localhost:3000"],  # Adjust this to your React app's URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,9 +41,6 @@ class SlideData(BaseModel):
 class PresentationData(BaseModel):
     slides: List[SlideData]
 
-class UserLogin(BaseModel):
-    email: str
-    password: str
 
 def text_fits(text_frame, max_size):
     """
@@ -76,7 +73,7 @@ def fit_text(text_frame, text_type='normal'):
 
     text_frame.word_wrap = True
     text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-
+    
     # Start with the maximum size
     size = max_size
     for paragraph in text_frame.paragraphs:
@@ -92,7 +89,7 @@ def fit_text(text_frame, text_type='normal'):
         words = text_frame.text.split()
         mid = len(words) // 2
         text_frame.text = ' '.join(words[:mid]) + '\n' + ' '.join(words[mid:])
-
+        
         # Readjust size after wrapping
         while not text_fits(text_frame, size) and size > min_size:
             size = max(size * 0.9, min_size)
@@ -108,7 +105,7 @@ def fit_text(text_frame, text_type='normal'):
 
 def create_slide(prs:Presentation, slide_data:SlideData):
     slide = prs.slides.add_slide(prs.slide_layouts[1])
-
+    
     # Title
     title = slide.shapes.title
     title.text = slide_data.title
@@ -148,7 +145,7 @@ def create_slide(prs:Presentation, slide_data:SlideData):
             rows, cols = len(data) + 1, len(headers)  # +1 for header row
             left, top, width, height = Inches(0.5), content_top, Inches(9), Inches(0.5 * rows)
             table = slide.shapes.add_table(rows, cols, left, top, width, height).table
-
+            
             # Populate the header row
             for col, header in enumerate(headers):
                 cell = table.cell(0, col)
@@ -157,7 +154,7 @@ def create_slide(prs:Presentation, slide_data:SlideData):
                 cell.fill.fore_color.rgb = RGBColor(200, 200, 200)
                 cell.text_frame.paragraphs[0].font.bold = True
                 cell.text_frame.paragraphs[0].font.size = Pt(10)
-
+            
             # Populate the data rows
             for row, row_data in enumerate(data, start=1):
                 for col, cell_data in enumerate(row_data):
@@ -202,10 +199,10 @@ def add_chart(slide, data, chart_type):
         # For charts with category and value axes
         if hasattr(chart, 'category_axis') and hasattr(chart.category_axis, 'tick_labels'):
             chart.category_axis.tick_labels.font.size = Pt(8)
-
+        
         if hasattr(chart, 'value_axis') and hasattr(chart.value_axis, 'tick_labels'):
             chart.value_axis.tick_labels.font.size = Pt(8)
-
+            
     else:
         # For pie charts
         chart.plots[0].has_data_labels = True
@@ -219,9 +216,6 @@ def add_chart(slide, data, chart_type):
     if hasattr(plot, 'data_labels'):
         plot.data_labels.font.size = Pt(8)
         plot.data_labels.font.color.rgb = RGBColor(0, 0, 0)  # Black color
-
-def ensure_directory(path):
-    os.makedirs(path, exist_ok=True)
 
 # Function 1: Save data to a JSON file
 def save_to_json(path: str, filename: str, data: dict):
@@ -272,68 +266,38 @@ def filter_slides(slides, selected_cards):
 
     return {"slides": filtered_slides}
 
-def user_exists(user_id):
-    users, status_code, error_message = read_from_json("./jsons/users/", "users.json")
-    if status_code != 200:
-        if status_code == 404:
-            raise HTTPException(status_code=500, detail="Users file not found")
-        elif status_code == 400:
-            raise HTTPException(status_code=500, detail="Invalid users file")
-        else:
-            raise HTTPException(status_code=500, detail=error_message)
-
-    for user in users:
-        if user.get('id') == user_id:
-            return {"message": "Login successful", "data": user_id}
-
-    return None
 
 # Pydantic model for request body
 class DataModel(BaseModel):
     data: dict
-class UserLoginData(BaseModel):
-    email: str
-    password: str
-class UserLogin(BaseModel):
-    data: UserLoginData
 
 class GeneratePPTRequest(BaseModel):
     type: str  
     selected_cards: List[str] 
 
 @app.post("/save-business-context")
-async def save_business_context(data: DataModel, User_id: str = Header(...)):
-    user_check_result = user_exists(User_id)
-    if user_check_result is None:
-        raise HTTPException(status_code=403, detail="User not found")
-
-    save_to_json(f"./jsons/{User_id}/input/", "business_context.json", data.data)
-    linked_ai_vlaues, status_code, error_message = read_from_json(f"./jsons/{User_id}/output/", "linked_ai_vlaues.json")
-
+async def save_business_context(data: DataModel):
+    save_to_json("./jsons/input/", "business_context.json", data.data)
+    suggestion_output, status_code, error_message = read_from_json("./jsons/output/", "suggestion_output.json")
     if status_code != 200:
         raise HTTPException(status_code=status_code, detail=error_message)
-    return linked_ai_vlaues
+    return suggestion_output
 
 @app.post("/save-suggestions")
-async def save_suggestions(data: DataModel, User_id: str = Header(...)):
-    print("user id", User_id)
-    user_check_result = user_exists(User_id)
-    if user_check_result is None:
-        raise HTTPException(status_code=403, detail="User not found")
-
-    save_to_json(f"./jsons/{User_id}/input/", "suggestion_input.json", data.data)
-
-    opportunities, opp_status, opp_error = read_from_json(f"./jsons/{User_id}/output/", "opportunities.json")
-    ai_use, ai_status, ai_error = read_from_json(f"./jsons/{User_id}/output/", "ai_use.json")
-    tech_enablement, tech_status, tech_error = read_from_json(f"./jsons/{User_id}/output/", "tech_enablement_values.json")
-
+async def save_suggestions(data: DataModel):
+    save_to_json("./jsons/input/", "suggestion_input.json", data.data)
+    
+    opportunities, opp_status, opp_error = read_from_json("./jsons/output/", "opportunities.json")
+    ai_use, ai_status, ai_error = read_from_json("./jsons/output/", "ai_use.json")
+    tech_enablement, tech_status, tech_error = read_from_json("./jsons/output/", "tech_enablement_values.json")
+    
     if opp_status != 200:
         raise HTTPException(status_code=opp_status, detail=opp_error)
     if ai_status != 200:
         raise HTTPException(status_code=ai_status, detail=ai_error)
     if tech_status != 200:
         raise HTTPException(status_code=tech_status, detail=tech_error)
-
+    
     return {
         "opportunities": opportunities,
         "ai_responsible_use": ai_use,
@@ -341,34 +305,30 @@ async def save_suggestions(data: DataModel, User_id: str = Header(...)):
     }
 
 @app.post("/save-tech-reasoning")
-async def save_business_context(data: DataModel, User_id: str = Header(...)):
-    user_check_result = user_exists(User_id)
-    if user_check_result is None:
-        raise HTTPException(status_code=403, detail="User not found")
-
-    save_to_json(f"./jsons/{User_id}/input/", "tech_reasoning.json", data.data)
-    tech_reasoning_result, status_code, error_message = read_from_json(f"./jsons/{User_id}/output/", "result.json")
+async def save_business_context(data: DataModel):
+    save_to_json("./jsons/input/", "tech_reasoning.json", data.data)
+    suggestion_output, status_code, error_message = read_from_json("./jsons/output/", "result.json")
     if status_code != 200:
         raise HTTPException(status_code=status_code, detail=error_message)
-    return tech_reasoning_result
+    return suggestion_output
 
 @app.post("/generate-ppt")
-async def generate_ppt(request: GeneratePPTRequest, User_id: str = Header(...)):
+async def generate_ppt(request: GeneratePPTRequest):
     # json_data, status_code, error_message = read_from_json("./jsons/output/", "short_table.json")
     if request.type.lower() not in ["short", "comprehensive"]:
         raise HTTPException(status_code=400, detail="Invalid type. Use 'short' or 'comprehensive'.")
-
+    
     json_file = "short_table.json" if request.type == "short" else "table.json"
     filename = "short_presentation.pptx" if request.type == "short" else "presentation.pptx"
 
-    json_data, status_code, error_message = read_from_json(f"./jsons/{User_id}/output/", json_file)
+    json_data, status_code, error_message = read_from_json("./jsons/output/", json_file)
 
     # Filter slides
     filtered_json_data = filter_slides(json_data.get("slides", []), request.selected_cards)
 
     if status_code != 200:
         raise HTTPException(status_code=status_code, detail=error_message)
-
+    
     try:
         presentation_data = PresentationData(**filtered_json_data)
     except ValueError as e:
@@ -388,20 +348,10 @@ async def generate_ppt(request: GeneratePPTRequest, User_id: str = Header(...)):
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
 
-@app.post("/login")
-def login(data: UserLogin):
-    users, status_code, error_message = read_from_json("./jsons/users/", "users.json")
-    if status_code != 200:
-        raise HTTPException(status_code=status_code, detail=error_message)
-    for u in users:
-        if u['email'] == data.data.email and u['password'] == data.data.password:
-            user_details = u.copy()
-            del user_details['password']
-            return {"message": "Login successful", "data": user_details}
-    raise HTTPException(status_code=400, detail="Invalid email or password")
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the FastAPI application!"}
 
 if __name__ == "__main__":
     import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

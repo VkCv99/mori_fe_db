@@ -9,7 +9,7 @@ import useAxios from "hooks/useAxios";
 function Result({step, resultValues}) {
   
     const navigate = useNavigate();
-    const { baseUrl } = useAxios()
+    const { getCall } = useAxios()
     // const { resultValues } = useApp();
     const [selectedCards, setSelectedCards] = useState([]);
 
@@ -27,7 +27,7 @@ function Result({step, resultValues}) {
       try {
         console.log("selectedCards", selectedCards, type)
         const response = await axios.post(
-          `${baseUrl}generate-ppt`,
+          `http://localhost:8000/generate-ppt`,
           {
             type: type, 
             selected_cards: selectedCards,

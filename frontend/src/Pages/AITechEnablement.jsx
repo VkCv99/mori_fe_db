@@ -67,7 +67,7 @@ const AITechEnablement = () => {
     setIsSubmitting(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
     setShowResult(true);
-    const result = await postCall("save-tech-reasoning", answers, { "user-id": userDetails.id });
+    const result = await postCall("save-tech-reasoning", answers);
       if(result.success){
         setFinalResultValues(result.data)
         setShowResult(true)

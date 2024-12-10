@@ -27,6 +27,7 @@ const Suggestions = ({ setSelectedMsg }) => {
             question: suggestion.question,
             examples: suggestion.examples,
             recommended: suggestion.recommended,
+            area:suggestion.text
           }
         ]);
       };

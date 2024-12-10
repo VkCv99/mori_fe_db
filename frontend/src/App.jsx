@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ToastContainer } from 'react-toastify';
-import { Route, Routes, useLocation, Outlet } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { AppProvider } from "context/AppContext"
 import Loader from 'common/Loader';
 import DefaultLayout from 'layout/DefaultLayout';
@@ -8,20 +7,11 @@ import BusinessContext from "Pages/BusinessContext"
 import LinkedAIValue from 'Pages/LinkedAIValue';
 import AITechEnablement from 'Pages/AITechEnablement';
 import AIResponsibleUse from 'Pages/AIResponsibleUse';
-import LogInWithImage from 'Pages/LogInWithImage';
-import LogIn from 'Pages/LogIn'
 import Test from 'Pages/Test'
 
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 
-function Wrapper () {
-  return (
-    <DefaultLayout>
-          <Outlet/>
-    </DefaultLayout>
-  )
-}
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -38,21 +28,42 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
-    <>
-      <AppProvider>
+      <DefaultLayout>
+        <AppProvider>
         <Routes>
-            <Route index element={<LogInWithImage />} />
-            <Route element={<Wrapper/>}>
-                <Route path="business-context" element={<BusinessContext />} />
-                <Route path="linked-ai-value" element={<LinkedAIValue />} />
-                <Route path="ai-responsible-use" element={<AIResponsibleUse />} />
-                <Route path="ai-tech-enablement" element={<AITechEnablement />} />
-                <Route path="test" element={<Test />} />
-            </Route>
+          <Route
+            index
+            element={
+                <BusinessContext/>
+            }
+          />
+          <Route
+            path="linked-ai-value"
+            element={
+                <LinkedAIValue />
+            }
+          />
+          <Route
+            path="ai-responsible-use"
+            element={
+                <AIResponsibleUse/>
+            }
+          />
+          <Route
+            path="ai-tech-enablement"
+            element={
+                <AITechEnablement/>
+            }
+          />
+           <Route
+            path="test"
+            element={
+                <Test/>
+            }
+          />
         </Routes>
         </AppProvider>
-        <ToastContainer/>
-        </>
+      </DefaultLayout>
 
   );
 }

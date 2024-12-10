@@ -6,13 +6,13 @@ import { useApp } from "context/AppContext";
 function AIResponsibleUse() {
 
   const {
-    responsibleAIUse,
+    responsibleAIArea,
   } = useApp();
 
   return (
     <>
         <Breadcrumb pageName="AI Responsible Use" />
-        <Result step={2} resultValues={responsibleAIUse}/>
+        <Result step={2} resultValues={responsibleAIArea}/>
     </>
   )
 }
