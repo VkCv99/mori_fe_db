@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import useAxios from 'hooks/useAxios';
-import { useApp } from "context/AppContext"
 import Result from "components/Result/Result";
-
-
+import useAxios from 'hooks/useAxios';
+import { useNavigate } from 'react-router-dom';
 
 function Opportunities() {
     const { getCall } = useAxios()
     const navigate = useNavigate()
-    const { getPreviousPath } = useApp();
     const [opportunities, setOpportunities] = useState([])
 
     useEffect(()=>{
@@ -20,9 +16,6 @@ function Opportunities() {
             }
             const result = await getCall("fetch-opportunities", {'user-id': userId})
             if(result.success){
-                if(!result.data.length){
-                    getPreviousPath()
-                }
                 setOpportunities(result.data)
             }
         })()

@@ -14,7 +14,7 @@ import { useApp } from 'context/AppContext';
 const AITechEnablement = () => {
   const navigate = useNavigate()
   const { postCall, getCall } = useAxios();
-  const { setFinalResultValues, getPreviousPath } = useApp()
+  const { setFinalResultValues } = useApp()
   const [currentArea, setCurrentArea] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -171,12 +171,7 @@ const AITechEnablement = () => {
       navigate("/")
     }
     getCall("fetch-tech-reasoning", {'user-id': userId}).then((result)=>{
-      if(result.success){
-        if(!result.data.length){
-          getPreviousPath()
-        }
-        setTechEnablementAreas(result.data)
-      }
+      setTechEnablementAreas(result.data)
     })
     // eslint-disable-next-line
   },[])

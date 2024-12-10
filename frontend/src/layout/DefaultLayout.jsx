@@ -10,10 +10,9 @@ const DefaultLayout = ({ children }) => {
 
   useEffect(()=>{
     const userId = localStorage.getItem("userid");
-    if(userId === null || userId === undefined || userId === "" ){
+    if(userId == null || userId == undefined || userId == "" ){
       navigate("/")
     }
-    // eslint-disable-next-line
   },[])
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">

@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Operational Efficiency",
+    "applicationTypes": "Content Workers",
+    "horizon": "Everyday Use Horizon 1 (FY24-FY26)",
+    "infoExposure": "Document Upload",
+    "dataSensitivity": "Internal",
+    "complexityOfUsage": "Low to Medium Risk & Complexity",
+    "riskRating": [
+      3,
+      2
+    ],
+    "description": "AI-powered automation to streamline claims processing and enhance engineering tooling governance.",
+    "reasoning": [
+      "The application involves internal documents and requires expert oversight, leading to a moderate risk rating."
+    ],
+    "level_of_specialisation_interactionact": "Process Augmentation : Expert in the Loop",
+    "app_operation": "Internal or Non-material Applications"
+  },
+  {
+    "name": "Strategic Planning And Risk Management",
+    "applicationTypes": "Connected Knowledge",
+    "horizon": "Transformation Horizon 3 (FY26-30)",
+    "infoExposure": "Training/Tuning",
+    "dataSensitivity": "Highly Protected",
+    "complexityOfUsage": "High Risk & Complexity",
+    "riskRating": 5,
+    "description": "Develop AI models to forecast engineering market trends and customer behavior for strategic planning.",
+    "reasoning": [
+      "Forecasting market trends involves highly protected information and is transformative in nature, requiring the highest level of risk management."
+    ],
+    "level_of_specialisation_interactionact": "Process Intelligence : AI First",
+    "app_operation": "External or Material Insurance Operations"
+  }
+]

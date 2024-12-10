@@ -1,0 +1,134 @@
+{
+  "1": {
+    "new_app_name": "ProcureAssist",
+    "category_name": "Personal Assistants",
+    "description": "AI-powered chatbots for handling routine procurement inquiries to improve stakeholder engagement and streamline the procurement process. These chatbots can provide immediate responses to frequently asked questions, guide users through procurement procedures, and offer support for basic supplier management tasks.",
+    "value_area_name": "Operational Efficiency",
+    "ai_enablement_quadrant": "Quadrant-2",
+    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized application designed to act as a 'Process or Team Copilot', enhancing the procurement process and team functions with AI-powered chatbots tailored for routine inquiries and basic support tasks.",
+    "questions": {
+      "1": {
+        "question": "how widely AI is used in your current team today?",
+        "answer": "AI has not yet been integrated into our team's operations."
+      },
+      "2": {
+        "question": "What do you think is the volume of data the organization has available for this application?",
+        "answer": "Moderate data volume (gigabytes)"
+      },
+      "3": {
+        "question": "What do you think is the quality of data the organization has available?",
+        "answer": "Good quality with minor inconsistencies"
+      },
+      "4": {
+        "question": "What do you think is the sensitivity of the data that will be used?",
+        "answer": "Moderately sensitive(e.g., internal business documents)"
+      },
+      "5": {
+        "question": "What is the accuracy tolerance for the application's output for this use case?",
+        "answer": "Moderate accuracy required (80-95%)"
+      },
+      "6": {
+        "question": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
+        "answer": "It is core to two of these operations."
+      },
+      "7": {
+        "question": "Which segment would you consider your business vertical to be most closely aligned to ?",
+        "answer": "Marketing, Digital, Customer Experience"
+      }
+    },
+    "app_name": "ProcureAssist",
+    "ai_use_class": "Quadrant-2",
+    "enablement_route": "Shape with Activators",
+    "potential_app_reuse": ["Appian", "NICE CX ONE"],
+    "data_advantage": "moderate",
+    "ip_advantage": "low"
+  },
+  "2": {
+    "new_app_name": "InventoryOptimizer",
+    "category_name": "Triage, Review & Risk Assessment",
+    "description": "Machine learning algorithms to optimize inventory levels, which can analyze historical data and predict future inventory requirements. This will reduce waste, ensure resource availability, and support the Procurement and Supplier Governance uplift by providing data-driven insights for better decision-making.",
+    "value_area_name": "Operational Efficiency",
+    "ai_use_class": "Augmentation",
+    "ai_enablement_quadrant": "Quadrant-2",
+    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized application designed to enhance the process of inventory management. It acts as a 'Process or Team Copilot' by providing data-driven insights for better decision-making, tailored to the specific needs of the procurement and supplier governance function.",
+    "questions": {
+      "1": {
+        "question": "how widely AI is used in your current team today?",
+        "answer": "AI is applied in a limited number of specific tasks or experimental projects."
+      },
+      "2": {
+        "question": "What do you think is the volume of data the organization has available for this application?",
+        "answer": "Moderate data volume (gigabytes)"
+      },
+      "3": {
+        "question": "What do you think is the quality of data the organization has available?",
+        "answer": "Good quality with minor inconsistencies"
+      },
+      "4": {
+        "question": "What do you think is the sensitivity of the data that will be used?",
+        "answer": "Moderately sensitive(e.g., internal business documents)"
+      },
+      "5": {
+        "question": "What is the accuracy tolerance for the application's output for this use case?",
+        "answer": "Moderate accuracy required (80-95%)"
+      },
+      "6": {
+        "question": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
+        "answer": "It is core to two of these operations."
+      },
+      "7": {
+        "question": "Which segment would you consider your business vertical to be most closely aligned to ?",
+        "answer": "Marketing, Digital, Customer Experience"
+      }
+    },
+    "app_name": "InventoryOptimizer",
+    "enablement_route": "Shape with Activators",
+    "potential_app_reuse": ["Appian", "GenAI Claims assistant"],
+    "data_advantage": "moderate",
+    "ip_advantage": "moderate"
+  },
+  "3": {
+    "new_app_name": "CustomerFeedbackAnalyzer",
+    "category_name": "Triage, Review & Risk Assessment",
+    "description": "AI-powered sentiment analysis tools for analyzing customer feedback to identify service enhancement opportunities. These tools can process large volumes of feedback data to provide actionable insights, informing training programs and service improvements.",
+    "value_area_name": "Customer Value",
+    "ai_use_class": "Augmentation",
+    "ai_enablement_quadrant": "Quadrant-2",
+    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized application designed to augment the triage, review, and risk assessment process by providing insights from customer feedback. It enhances a specific process and requires expert oversight, aligning with the strategy of implementing specialized applications for particular team functions.",
+    "questions": {
+      "1": {
+        "question": "how widely AI is used in your current team today?",
+        "answer": "AI is applied in a limited number of specific tasks or experimental projects."
+      },
+      "2": {
+        "question": "What do you think is the volume of data the organization has available for this application?",
+        "answer": "Limited data availability (kilobytes or less)"
+      },
+      "3": {
+        "question": "What do you think is the quality of data the organization has available?",
+        "answer": "Good quality with minor inconsistencies"
+      },
+      "4": {
+        "question": "What do you think is the sensitivity of the data that will be used?",
+        "answer": "Moderately sensitive(e.g., internal business documents)"
+      },
+      "5": {
+        "question": "What is the accuracy tolerance for the application's output for this use case?",
+        "answer": "Moderate accuracy required (80-95%)"
+      },
+      "6": {
+        "question": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
+        "answer": "It is core to two of these operations."
+      },
+      "7": {
+        "question": "Which segment would you consider your business vertical to be most closely aligned to ?",
+        "answer": "Marketing, Digital, Customer Experience"
+      }
+    },
+    "app_name": "CustomerFeedbackAnalyzer",
+    "enablement_route": "Shape with Activators",
+    "potential_app_reuse": ["GenAI Claims assistant", "New Relic AI"],
+    "data_advantage": "low",
+    "ip_advantage": "low"
+  }
+}

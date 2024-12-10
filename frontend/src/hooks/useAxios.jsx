@@ -30,7 +30,7 @@ const useAxios = () => {
             const config = {
                 headers: headers
               };
-              const response = await axios.post(baseUrl + path, body, config);
+              const response = await axios.post(baseUrl + path, {"data": body}, config);
             return { success: true, data: response.data };
         } catch (err) {
             return { success: false, error: err.response.data.detail || err.response.data.message || 'Error occurred' };

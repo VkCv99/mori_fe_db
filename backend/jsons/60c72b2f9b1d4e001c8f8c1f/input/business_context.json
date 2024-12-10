@@ -1,0 +1,15 @@
+{
+  "businessContext": {
+    "persona": "ABC",
+    "businessVertical": "ABC",
+    "winningAspiration": "ABC"
+  },
+  "focusAreas": [
+    {
+      "name": "ABC",
+      "priorityOutcome": "ABC",
+      "measurableTarget": "ABC",
+      "risksAndDependencies": "ABC"
+    }
+  ]
+}

@@ -1,13 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useLocation, useNavigate } from 'react-router-dom';
+
 
 // Create a context
 const AppContext = createContext();
 
 // Create a provider component
 export const AppProvider = ({ children }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
   const [defaultSuggestions, setDefaultSuggestions] = useState([]);
   const [defaultRecommendedSuggestions, setDefaultRecommendedSuggestions] = useState([]);
   const [userDetails, setUserDetails] = useState({});
@@ -15,20 +13,6 @@ export const AppProvider = ({ children }) => {
 
   const handleDefaultSuggestions = (suggetions) => {
     setDefaultSuggestions(suggetions);
-  };
-
-  const getPreviousPath = () => {
-    const path = location.pathname;
-    const pathMap = {
-        "/business-context": "/",
-        "/value-areas": "/business-context",
-        "/opportunities": "/value-areas",
-        "/ai-applications": "/opportunities",
-        "/ai-use": "/ai-applications",
-        "/ai-tech-enablement": "/ai-use",
-        "/final-result": "/ai-tech-enablement"
-    };
-    return navigate(pathMap[path] || "/");
   };
 
   useEffect(()=>{
@@ -43,8 +27,7 @@ export const AppProvider = ({ children }) => {
     userDetails,
     setUserDetails,
     FinalresultValues,
-    setFinalResultValues,
-    getPreviousPath
+    setFinalResultValues
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

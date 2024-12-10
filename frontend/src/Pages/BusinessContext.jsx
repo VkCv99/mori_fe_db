@@ -4,9 +4,11 @@ import { Layers, Target, AlertTriangle, ArrowRight } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Breadcrumb from "components/Breadcrumb/Breadcrumb";
 import useAxios from "hooks/useAxios"
+import { useApp } from "context/AppContext";
 import BusinessContextPPT from "../assets/ppts/business_context.pptx";
 
 const BusinessContext = () => {
+    const { handleDefaultSuggestions } = useApp();
     const navigate = useNavigate()
     const { postCall } = useAxios()
     const [mainInfo, setMainInfo] = useState({ persona: '', businessVertical: '', winningAspiration: '' });
@@ -56,7 +58,8 @@ const BusinessContext = () => {
       const data = {businessContext:mainInfo, focusAreas};
       const result = await postCall("save-business-context", data, {'user-id': userId});
       if(result.success){
-          toast.success("your request has been submitted successfully")
+          handleDefaultSuggestions(result.data)
+          toast.success("your request has been summitted successfully")
           setTimeout(()=>{
             navigate("/value-areas")
           }, 1000)

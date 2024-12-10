@@ -1,0 +1,119 @@
+{
+  "1": {
+    "new_app_name": "CustomerServiceEnhancer",
+    "category_name": "Customer Service Delivery",
+    "description": "AI-driven chatbots and voice-bots to enhance customer service by providing instant responses and personalized interactions.",
+    "value_area_name": "Augmentation",
+    "ai_use_class": "Customer Value",
+    "ai_enablement_quadrant": "Quadrant-2",
+    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized tool designed to augment the customer service process with AI capabilities, tailored to enhance customer interactions and provide personalized service.",
+    "questions": {
+      "1": {
+        "question": "how widely AI is used in your current team today?",
+        "answer": "AI is deeply embedded in our workflows, driving automation, analytics, and decision-making processes."
+      },
+      "2": {
+        "question": "What do you think is the volume of data the organization has available for this application?",
+        "answer": "Extensive data (petabytes or more)"
+      },
+      "3": {
+        "question": "What do you think is the quality of data the organization has available?",
+        "answer": "High quality, well-curated data"
+      },
+      "4": {
+        "question": "What do you think is the sensitivity of the data that will be used?",
+        "answer": "Generally sensitive (e.g., financial records)"
+      },
+      "5": {
+        "question": "What is the accuracy tolerance for the application's output for this use case?",
+        "answer": "Very high accuracy required (above 95%)"
+      },
+      "6": {
+        "question": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
+        "answer": "It is core to one of these operations"
+      },
+      "7": {
+        "question": "Which segment would you consider your business vertical to be most closely aligned to ?",
+        "answer": "Marketing, Digital, Customer Experience"
+      }
+    }
+  },
+  "2": {
+    "new_app_name": "ClaimsDecisionAI",
+    "category_name": "End",
+    "description": "AI-powered end-to-end decisioning systems for handling claims and fraud cases, providing faster and more accurate resolutions.",
+    "value_area_name": "Transformation",
+    "ai_use_class": "Competitive Advantage",
+    "ai_enablement_quadrant": "Quadrant-4",
+    "quadrant_reasoning": "This application falls into Quadrant 4 as it requires the development of specialized, industry-specific AI solutions that handle high-risk and complex processes, such as claims and fraud decisioning in the insurance industry.",
+    "questions": {
+      "1": {
+        "question": "how widely AI is used in your current team today?",
+        "answer": "AI is utilized in several critical functions, enhancing efficiency and providing data-driven insights."
+      },
+      "2": {
+        "question": "What do you think is the volume of data the organization has available for this application?",
+        "answer": "Moderate data volume (gigabytes)"
+      },
+      "3": {
+        "question": "What do you think is the quality of data the organization has available?",
+        "answer": "Good quality with minor inconsistencies"
+      },
+      "4": {
+        "question": "What do you think is the sensitivity of the data that will be used?",
+        "answer": " Highly sensitive (e.g., personally identifiable information)"
+      },
+      "5": {
+        "question": "What is the accuracy tolerance for the application's output for this use case?",
+        "answer": "Moderate accuracy required (80-95%)"
+      },
+      "6": {
+        "question": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
+        "answer": "It is core to two of these operations."
+      },
+      "7": {
+        "question": "Which segment would you consider your business vertical to be most closely aligned to ?",
+        "answer": "Marketing, Digital, Customer Experience"
+      }
+    }
+  },
+  "3": {
+    "new_app_name": "RiskAssessorAI",
+    "category_name": "Triage, Review & Risk Assessment",
+    "description": "AI-driven analytics for triage and risk assessment, providing data-driven insights to support strategic decision-making.",
+    "value_area_name": "Augmentation",
+    "ai_use_class": "Decision Intelligence And Reporting",
+    "ai_enablement_quadrant": "Quadrant-2",
+    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized tool designed to augment the triage and risk assessment process with expert oversight, tailored to support strategic decision-making within the organization.",
+    "questions": {
+      "1": {
+        "question": "how widely AI is used in your current team today?",
+        "answer": "AI is applied in a limited number of specific tasks or experimental projects."
+      },
+      "2": {
+        "question": "What do you think is the volume of data the organization has available for this application?",
+        "answer": "Extensive data (petabytes or more)"
+      },
+      "3": {
+        "question": "What do you think is the quality of data the organization has available?",
+        "answer": "Good quality with minor inconsistencies"
+      },
+      "4": {
+        "question": "What do you think is the sensitivity of the data that will be used?",
+        "answer": "Low sensitive (e.g., public-facing content)"
+      },
+      "5": {
+        "question": "What is the accuracy tolerance for the application's output for this use case?",
+        "answer": "Some tolerance for inaccuracies (60-80%)"
+      },
+      "6": {
+        "question": "Will the data to be used for this application be considered to be core to IAG's insurance, customer or employee operations?",
+        "answer": "It is core all of these operations."
+      },
+      "7": {
+        "question": "Which segment would you consider your business vertical to be most closely aligned to ?",
+        "answer": "People & Finance, Operations, Risk"
+      }
+    }
+  }
+}

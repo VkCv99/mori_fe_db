@@ -1,22 +1,18 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from "axios"
-import { toast } from 'react-toastify';
 import { ArrowRight, ArrowDown } from 'lucide-react';
 // import { useApp } from "context/AppContext";
 import ResultCard from "components/Result/ResultCard"
 import useAxios from "hooks/useAxios";
 import OpportunitiesCard from './OpportunitiesCard';
 import AIResponsibleUseCard from './AIResponsibleUseCard';
-import EditModal from 'components/Models/EditModal';
 
-
-function Result({step, resultValues, handleResultChange=()=>{}}) {
+function Result({step, resultValues}) {
+  
     const navigate = useNavigate();
-    const { baseUrl, postCall } = useAxios()
+    const { baseUrl } = useAxios()
     const [selectedCards, setSelectedCards] = useState([]);
-    const [editCard, setEditCard] = useState();
-    const [updatedValue, setUpdatedValue] = useState([])
 
     const handleCardSelect = (card) => {
       setSelectedCards(prevSelected => {
@@ -62,42 +58,13 @@ function Result({step, resultValues, handleResultChange=()=>{}}) {
       }
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if(step === 1){
             navigate("/ai-applications")
         } else {
-            const userId = localStorage.getItem("userid");
-            const result = await postCall("save-edited-ai-use", {"originalOfEdited":updatedValue, "edited":resultValues}, {'user-id': userId});
-            if(result.success){
-              navigate("/ai-tech-enablement")
-            } else {
-              toast.warn(`${result.error}`)
-            }
+            navigate("/ai-tech-enablement")
         }
     }
-
-    const handleCurrentAreaChange = (newItem) => {
-      handleResultChange(prevItems => {
-        // Create a new array with the updated item at the specified index
-        return prevItems.map((item) => {
-          if(newItem.id === item.id){
-            setUpdatedValue(prevState => {
-              // Check if an object with the same ID already exists in the array
-              const exists = prevState.some(item => item.id === newItem.id);
-              // If the object with the same ID does not exist, add the new object
-              if (!exists) {
-                return [...prevState, item];
-              }
-          
-              // Otherwise, return the previous state unchanged
-              return prevState;
-            });
-            return { ...item, ...newItem }
-          } 
-          return item
-        });
-      });
-    };
 
     return (
         <div className="h-full overflow-y-auto w-full p-6 bg-gray-800 bg-opacity-30 rounded-lg backdrop-blur-sm overflow-hidden">
@@ -106,17 +73,15 @@ function Result({step, resultValues, handleResultChange=()=>{}}) {
                 if(step === 1){
                   return <OpportunitiesCard key={`opportunities_${index}`} currentArea={currentArea} />
                 } else if(step === 2){
-                  return <AIResponsibleUseCard key={`ai_use_${index}`} currentArea={currentArea} handleEditModal={setEditCard} />
+                  return <AIResponsibleUseCard key={`ai_use_${index}`} currentArea={currentArea}/>
                 }else{
-                  return (
-                    <ResultCard 
-                      key={`result_${index}`} 
-                      currentArea={currentArea} 
-                      step={step} 
-                      isSelected={selectedCards.some(oldCard => oldCard.id === currentArea.id)}
-                      onSelect={handleCardSelect}
-                    />
-                  )
+                  return <ResultCard 
+                    key={`result_${index}`} 
+                    currentArea={currentArea} 
+                    step={step} 
+                    isSelected={selectedCards.some(oldCard => oldCard.id === currentArea.id)}
+                    onSelect={handleCardSelect}
+                  />
                 }
                 
               } )
@@ -154,14 +119,6 @@ function Result({step, resultValues, handleResultChange=()=>{}}) {
                 </button>
               </div>)
             : null}
-          
-            <EditModal
-              isOpen={!!editCard}
-              onClose={()=>setEditCard()}
-              data={editCard}
-              handleCurrentAreaChange={handleCurrentAreaChange}
-            />
-           
         </div>
     );
 }

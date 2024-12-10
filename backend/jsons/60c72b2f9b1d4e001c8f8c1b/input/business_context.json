@@ -1,0 +1,15 @@
+{
+  "businessContext": {
+    "persona": "dsaf",
+    "businessVertical": "asdf",
+    "winningAspiration": "sadf"
+  },
+  "focusAreas": [
+    {
+      "name": "asdf",
+      "priorityOutcome": "sadf",
+      "measurableTarget": "asdf",
+      "risksAndDependencies": "asdf"
+    }
+  ]
+}

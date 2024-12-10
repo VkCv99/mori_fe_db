@@ -1,7 +1,7 @@
 import React from "react";
-import { Calendar, Eye, Shield, Sliders, AlertTriangle , LayoutGrid, ChevronsLeftRightEllipsis, Pencil } from 'lucide-react';
+import { Calendar, Eye, Shield, Sliders, AlertTriangle , LayoutGrid, ChevronsLeftRightEllipsis} from 'lucide-react';
 
-function AIResponsibleUseCard({ currentArea, handleEditModal}) {
+function AIResponsibleUseCard({ currentArea }) {
   const riskColor = (rating) => {
     const colors = [
       "bg-green-500 text-white",
@@ -26,7 +26,7 @@ function AIResponsibleUseCard({ currentArea, handleEditModal}) {
   return (
     <div className={`mb-6 rounded-xl shadow-lg overflow-hidden relative`}>
       {/* Header */}
-      <div className="p-4 bg-primary flex items-center justify-between">
+      <div className="p-4 bg-primary">
         <div className="flex items-center">
           <div className="w-12 h-12 bg-light-gray bg-opacity-20 rounded-full flex items-center justify-center mr-4">
             {/* <IconComponent className="w-6 h-6 text-light-gray" /> */}
@@ -38,10 +38,6 @@ function AIResponsibleUseCard({ currentArea, handleEditModal}) {
             {currentArea.name}
           </h2>
         </div>
-        <div className="flex items-center text-white">
-          <Pencil className="cursor-pointer" onClick={()=>handleEditModal(currentArea)} /> ̰
-        </div>
-        
       </div>
 
       {/* Body */}

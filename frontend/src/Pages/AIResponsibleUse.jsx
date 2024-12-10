@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useApp } from "context/AppContext"
 import Loader from 'common/Loader';
 import Result from "components/Result/Result";
 import Breadcrumb from "components/Breadcrumb/Breadcrumb";
@@ -10,7 +9,6 @@ import AIResponsibleUsePPT from "../assets/ppts/ai_responsible_use.pptx";
 function AIResponsibleUse() {
   const { getCall } = useAxios();
   const navigate = useNavigate();
-  const { getPreviousPath } = useApp();
   const [responsibleAIArea, setResponsibleAIArea] = useState([]);
   
   useEffect(()=>{
@@ -19,12 +17,7 @@ function AIResponsibleUse() {
       navigate("/")
     }
     getCall("fetch-ai-use", {'user-id': userId}).then((result)=>{
-      if(result.success){
-        if(!result.data.length){
-          getPreviousPath()
-        }
-        setResponsibleAIArea(result.data)
-      }
+      setResponsibleAIArea(result.data)
     })
     // eslint-disable-next-line
   },[])
@@ -33,7 +26,7 @@ function AIResponsibleUse() {
     return (
       <>
           <Breadcrumb pageName="AI Responsible Use" ppt={AIResponsibleUsePPT}/>
-          <Result step={2} resultValues={responsibleAIArea} handleResultChange={setResponsibleAIArea} />
+          <Result step={2} resultValues={responsibleAIArea}/>
       </>
     )
   }

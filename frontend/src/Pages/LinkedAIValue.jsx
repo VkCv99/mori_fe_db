@@ -13,9 +13,9 @@ import linkedAiValuePPT from "../assets/ppts/linked_ai_value.pptx";
 // import { valueAreas } from "JSONs/valueAreas"
 
 const LinkedAIValue = () => {
-  const { defaultRecommendedSuggestions, getPreviousPath, handleDefaultSuggestions } = useApp();
+  const { defaultRecommendedSuggestions } = useApp();
   const navigate = useNavigate()
-  const {postCall, getCall} = useAxios()
+  const {postCall} = useAxios()
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -154,22 +154,6 @@ const LinkedAIValue = () => {
     }
     setIsSuggestionDisable(true)
   },[messages])
-
-  useEffect(()=>{
-    const userId = localStorage.getItem("userid");
-    if(userId === null || userId === undefined || userId === "" ){
-      navigate("/")
-    }
-    getCall("fetch-value-areas", {'user-id': userId}).then((result)=>{
-      if(result.success){
-        if(!result.data.length){
-          getPreviousPath()
-        }
-        handleDefaultSuggestions(result.data)
-      }
-    })
-    // eslint-disable-next-line
-  },[])
 
   return (
     <>

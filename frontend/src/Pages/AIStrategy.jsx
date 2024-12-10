@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useApp } from "context/AppContext"
 import { toast } from 'react-toastify';
 import { ArrowRight } from 'lucide-react';
 import Loader from 'common/Loader';
@@ -12,33 +11,25 @@ import AIStrategyCard from 'components/Result/AIStrategyCard';
 function AIStrategy() {
   const navigate = useNavigate();
   const { getCall, postCall } = useAxios();
-  const { getPreviousPath } = useApp();
   const [aiStrategies, setAiStrategies] = useState([]);
-  const [selectedCards, setSelectedCards] = useState([]);
+  const [selectedCard, setSelectedCard] = useState({});
 
   const handleCardSelect = (card) => {
-    setSelectedCards(prevState => {
-      // Check if the object with the same ID already exists
-      const exists = prevState.some(item => item.id === card.id);
-  
-      if (exists) {
-        // If the object exists, filter it out (pop it)
-        return prevState.filter(item => item.id !== card.id);
-      } else {
-        // If the object does not exist, add it (push it)
-        return [...prevState, card];
+    setSelectedCard(prevSelected => {
+      if (prevSelected?.id === card.id) {
+        return {};
       }
+      return card;
     });
   };
   
   const checkIsSelected = (id) => {
-    const exists = selectedCards.some(item => item.id === id);
-    return exists;
+    return selectedCard?.id === id;
   };
   
   const handleSubmit = async() => {
     const userId = localStorage.getItem("userid");
-    const startegy = selectedCards.length ? selectedCards : aiStrategies;
+    const startegy = Object.keys(selectedCard).length ? [selectedCard] : aiStrategies;
     const result = await postCall("save-ai-strategy", startegy, {'user-id': userId});
       if(result.success){
         navigate("/ai-use")
@@ -53,12 +44,7 @@ function AIStrategy() {
       navigate("/")
     }
     getCall("fetch-ai-strategy", {'user-id': userId}).then((result)=>{
-      if(result.success){
-        if(!result.data.length){
-          getPreviousPath()
-        }
-        setAiStrategies(result.data)
-      }
+      setAiStrategies(result.data)
     })
     // eslint-disable-next-line
   },[])

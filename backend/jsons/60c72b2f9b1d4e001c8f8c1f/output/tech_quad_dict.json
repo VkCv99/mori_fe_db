@@ -1,0 +1,29 @@
+{
+  "1": {
+    "new_app_name": "CustomerServiceEnhancer",
+    "value_area_name": "Customer Value",
+    "ai_use_class": "Augmentation",
+    "category_name": "Customer Service Delivery",
+    "description": "AI-driven chatbots and voice-bots to enhance customer service by providing instant responses and personalized interactions.",
+    "ai_enablement_quadrant": "Quadrant 2",
+    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized tool designed to augment the customer service process with AI capabilities, tailored to enhance customer interactions and provide personalized service."
+  },
+  "2": {
+    "new_app_name": "ClaimsDecisionAI",
+    "value_area_name": "Competitive Advantage",
+    "ai_use_class": "Transformation",
+    "category_name": "End-to-End Decisioning",
+    "description": "AI-powered end-to-end decisioning systems for handling claims and fraud cases, providing faster and more accurate resolutions.",
+    "ai_enablement_quadrant": "Quadrant 4",
+    "quadrant_reasoning": "This application falls into Quadrant 4 as it requires the development of specialized, industry-specific AI solutions that handle high-risk and complex processes, such as claims and fraud decisioning in the insurance industry."
+  },
+  "3": {
+    "new_app_name": "RiskAssessorAI",
+    "value_area_name": "Decision Intelligence And Reporting",
+    "ai_use_class": "Augmentation",
+    "category_name": "Triage, Review & Risk Assessment",
+    "description": "AI-driven analytics for triage and risk assessment, providing data-driven insights to support strategic decision-making.",
+    "ai_enablement_quadrant": "Quadrant 2",
+    "quadrant_reasoning": "This application falls into Quadrant 2 as it is a specialized tool designed to augment the triage and risk assessment process with expert oversight, tailored to support strategic decision-making within the organization."
+  }
+}

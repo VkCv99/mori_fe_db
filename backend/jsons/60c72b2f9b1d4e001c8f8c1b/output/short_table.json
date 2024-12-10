@@ -1,0 +1,19 @@
+{
+    "slides": [
+        {
+            "title": "Ideation Tool Recommendations",
+            "content": [
+                {
+                    "headers": ["Sr No.","Recommended AI Application", "Linked AI Value", "Connected Focus Areas","Responsible AI Use Guidelines", "AI Tech Enablement Suggestions"],
+                    "data": [
+                        ["1", "Personal Assistants", "Operational Efficiency", "Engineering, SDLC", "Everyday Use", "Shape"],
+                        ["2", "Content Workers", "Customer Value", "SDLC", "Augment", "Compose"],
+                        ["3", "End to End Decisioning", "Competitive Advantage", "Engineering, Culture", "Transform", "Build"]
+                        
+                    ],
+                    "type": "table"
+                }
+            ]
+        }
+    ]
+}

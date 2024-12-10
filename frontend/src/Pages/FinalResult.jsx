@@ -1,14 +1,9 @@
-import React, {useEffect} from "react"
 import Result from 'components/Result/Result'
 import { useApp } from 'context/AppContext'
+import React from 'react'
 
 function FinalResult() {
-  const { FinalresultValues,getPreviousPath } = useApp();
-  useEffect(()=>{
-    if(!FinalresultValues.length){
-      getPreviousPath();
-    }
-  },[FinalresultValues, getPreviousPath])
+  const {FinalresultValues} = useApp()
   return (
     <Result step={3} resultValues={FinalresultValues}/>
   )
