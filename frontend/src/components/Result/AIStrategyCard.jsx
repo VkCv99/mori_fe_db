@@ -3,9 +3,9 @@ import { Calendar, Activity, Target, Layers, CheckCircle } from 'lucide-react';
 
 const AIStrategyCard = ({ app, onSelect, isSelected, index }) => {
   const getRiskColor = (risk) => {
-    if (risk.includes('Low')) return 'bg-green-500';
-    if (risk.includes('Medium')) return 'bg-yellow-400';
-    return 'bg-red-500';
+    if (risk.includes('Low')) return 'text-white bg-green-500';
+    if (risk.includes('Medium')) return 'text-black bg-yellow-400';
+    return 'text-white bg-red-500';
   };
 
   const getImpactColor = (impact) => {
@@ -55,7 +55,7 @@ const AIStrategyCard = ({ app, onSelect, isSelected, index }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-black">Risk & Complexity</p>
-                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-white text-sm ${getRiskColor(app.riskComplexity)}`}>
+                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getRiskColor(app.riskComplexity)}`}>
                     <Activity className="w-4 h-4 mr-2" />
                     {app.riskComplexity}
                   </div>

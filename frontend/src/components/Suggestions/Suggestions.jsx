@@ -1,13 +1,14 @@
-import React , { useState } from 'react';
+import React , { useState,useEffect } from 'react';
 import { Star} from "lucide-react";
 import { useApp } from "context/AppContext"
 
-const Suggestions = ({ setSelectedMsg }) => {
+const Suggestions = ({ setSelectedMsg, disable }) => {
 
     const { defaultSuggestions } = useApp();
     const [suggestions, setSuggestions] = useState([...defaultSuggestions]);
   
     const handleSuggestionClick = (suggestion) => {
+      if(!suggestion.selected && !disable){
         setSuggestions(prevData => {
           return prevData.map(item => {
             // Create a new object to avoid mutating the original
@@ -30,14 +31,19 @@ const Suggestions = ({ setSelectedMsg }) => {
             area:suggestion.text
           }
         ]);
-      };
+      }
+    };
+    useEffect(()=>{
+      setSuggestions([...defaultSuggestions])
+    },[defaultSuggestions])
 
     return (
       <div className="mt-4">
         <h3 className="text-primary text-lg mb-3">Suggestions:</h3>
         <div className="flex flex-wrap gap-2">
-          {suggestions.map((suggestion) => (
+          {suggestions.map((suggestion, index) => (
               <button
+                key={`${suggestion.text}_${index}`}
                 onClick={() => handleSuggestionClick(suggestion)}
                 className={`flex items-center px-4 py-2 rounded-full text-sm transition-all duration-200
                     ${
@@ -45,6 +51,7 @@ const Suggestions = ({ setSelectedMsg }) => {
                           ? "text-white bg-gradient-to-r from-warm-red to-primary"
                           : "bg-white text-dusky-teal border-2 border-dusky-teal"
                       }
+                    ${disable?"cursor-default":""}
                     `}
               >
                 {suggestion.recommended && (

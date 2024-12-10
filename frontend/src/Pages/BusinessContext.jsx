@@ -4,12 +4,9 @@ import { Layers, Target, AlertTriangle, ArrowRight } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Breadcrumb from "components/Breadcrumb/Breadcrumb";
 import useAxios from "hooks/useAxios"
-import { useApp } from "context/AppContext";
-import businessContextPPT from "../assets/ppts/business_context.pptx";
+import BusinessContextPPT from "../assets/ppts/business_context.pptx";
 
 const BusinessContext = () => {
-
-    const { handleDefaultSuggestions } = useApp();
     const navigate = useNavigate()
     const { postCall } = useAxios()
     const [mainInfo, setMainInfo] = useState({ persona: '', businessVertical: '', winningAspiration: '' });
@@ -27,10 +24,10 @@ const BusinessContext = () => {
     };
   
     const submitMainInfo = () => {
-      if (mainInfo.persona && mainInfo.businessVertical && mainInfo.winningAspiration) {
+      if (mainInfo.persona.trim() && mainInfo.businessVertical.trim() && mainInfo.winningAspiration.trim()) {
         setIsMainInfoSubmitted(true);
       } else {
-        alert('Please fill all main info fields before submitting.');
+        toast.warn('Please fill all main info fields before submitting.');
       }
     };
   
@@ -39,32 +36,38 @@ const BusinessContext = () => {
     };
   
     const addFocusArea = () => {
-      if (newFocusArea.priorityOutcome.trim() !== '') {
+      if (newFocusArea.name.trim() && 
+            newFocusArea.priorityOutcome.trim() && 
+            newFocusArea.measurableTarget.trim() && 
+            newFocusArea.risksAndDependencies.trim()) {
         setFocusAreas([...focusAreas, newFocusArea]);
         setNewFocusArea({ priorityOutcome: '', measurableTarget: '', risksAndDependencies: '', name:'' });
+      }else {
+        toast.warn('Please fill focus area fields before adding new focus area.');
       }
     };
   
     const handleSubmit = async(e) => {
       e.preventDefault();
+      const userId = localStorage.getItem("userid");
+      if(userId === null || userId === undefined || userId === "" ){
+        navigate("/")
+      }
       const data = {businessContext:mainInfo, focusAreas};
-      const result = await postCall("save-business-context", data);
+      const result = await postCall("save-business-context", data, {'user-id': userId});
       if(result.success){
-          // handleDefaultSuggestions(suggestions)
-          handleDefaultSuggestions(result.data)
-          toast.success("your request has been summitted successfully")
+          toast.success("your request has been submitted successfully")
           setTimeout(()=>{
-            navigate("/linked-ai-value")
+            navigate("/value-areas")
           }, 1000)
       }else{
           toast.warn(`${result.error}`)
       }
-      
-      // Here you would typically send this data to a server or perform other actions
     };
+
   return (
     <>
-      <Breadcrumb pageName="Business Context" ppt={businessContextPPT} />
+      <Breadcrumb pageName="Business Context" ppt={BusinessContextPPT} />
 
       <div className="grid grid-cols-1">
         <div className="flex flex-col gap-9">
@@ -210,7 +213,7 @@ const BusinessContext = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         {focusAreas.map((area, index) => (
-           <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
+           <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-6" key={`${area.name}_${index}`}>
            <div className="text-white p-4 bg-primary">
              <h3 className="text-xl font-bold">{area.name}</h3>
            </div>

@@ -2,7 +2,6 @@ import React from 'react'
 
 function OpportunitiesCard({currentArea}) {
 
-    console.log("currentArea", currentArea)
     return (
         <div 
           className={`mb-6 rounded-xl shadow-lg overflow-hidden relative`}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import { Route, Routes, useLocation, Outlet } from 'react-router-dom';
 import { AppProvider } from "context/AppContext"
 import Loader from 'common/Loader';
 import DefaultLayout from 'layout/DefaultLayout';
@@ -8,11 +9,21 @@ import LinkedAIValue from 'Pages/LinkedAIValue';
 import AITechEnablement from 'Pages/AITechEnablement';
 import AIResponsibleUse from 'Pages/AIResponsibleUse';
 import AIStrategy from 'Pages/AIStrategy'
-import Test from 'Pages/Test'
+import LogIn from 'Pages/LogIn';
+import SignUp from 'Pages/SignUp';
+import Opportunities from 'Pages/Opportunities';
+import FinalResult from 'Pages/FinalResult';
 
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 
+function Wrapper () {
+  return (
+    <DefaultLayout>
+          <Outlet/>
+    </DefaultLayout>
+  )
+}
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -29,48 +40,24 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
-      <DefaultLayout>
-        <AppProvider>
+    <>
+      <AppProvider>
         <Routes>
-          <Route
-            index
-            element={
-                <BusinessContext/>
-            }
-          />
-          <Route
-            path="linked-ai-value"
-            element={
-                <LinkedAIValue />
-            }
-          />
-          <Route
-            path="ai-startegy"
-            element={
-                <AIStrategy/>
-            }
-          />
-          <Route
-            path="ai-responsible-use"
-            element={
-                <AIResponsibleUse/>
-            }
-          />
-          <Route
-            path="ai-tech-enablement"
-            element={
-                <AITechEnablement/>
-            }
-          />
-           <Route
-            path="test"
-            element={
-                <Test/>
-            }
-          />
+            <Route index element={<LogIn />} />
+            <Route path="sign-up" element={<SignUp />} />
+            <Route element={<Wrapper/>}>
+                <Route path="business-context" element={<BusinessContext />} />
+                <Route path="value-areas" element={<LinkedAIValue />} />
+                <Route path="opportunities" element={<Opportunities />} />
+                <Route path="ai-applications" element={<AIStrategy />} />
+                <Route path="ai-use" element={<AIResponsibleUse />} />
+                <Route path="ai-tech-enablement" element={<AITechEnablement />} />
+                <Route path="final-result" element={<FinalResult />} />
+            </Route>
         </Routes>
         </AppProvider>
-      </DefaultLayout>
+        <ToastContainer/>
+        </>
 
   );
 }

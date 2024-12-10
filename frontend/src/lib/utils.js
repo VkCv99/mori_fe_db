@@ -37,7 +37,6 @@ export function parseMessage(message) {
       }
 
       const tag = message.slice(i + 1, tagEnd);
-      console.log("tag.......", tag)
       if (tag.startsWith("thinking")) {
         currentPart = { type: "thought", data: "" };
         i = tagEnd + 1;

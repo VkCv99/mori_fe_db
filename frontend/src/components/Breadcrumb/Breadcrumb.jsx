@@ -3,19 +3,16 @@ import { Link } from 'react-router-dom';
 const Breadcrumb = ({ pageName, ppt }) => {
 
   const downloadFile = (file) => {
-
-      // Create a Blob from the response data
-      const blob = new Blob([file], {
-        type: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-      });
-
-      // Create a link element and trigger the download
-      const link = document.createElement("a");
-      link.href = window.URL.createObjectURL(blob);
-      link.download = "presentation.pptx";
+     try {
+      const link = document.createElement('a');
+      link.href = file;
+      link.download = 'presentation.pptx';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    }
   }
 
 
@@ -32,7 +29,7 @@ const Breadcrumb = ({ pageName, ppt }) => {
         <ol className="flex items-center gap-2">
           <li>
             <Link className="font-medium" to="/">
-              APP /
+              IAG /
             </Link>
           </li>
           <li className="font-medium text-primary">{pageName}</li>

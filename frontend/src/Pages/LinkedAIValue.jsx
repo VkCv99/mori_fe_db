@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import MessageLoader from "common/MessageLoader";
 import Suggestions from "components/Suggestions/Suggestions";
@@ -6,23 +7,19 @@ import Breadcrumb from "components/Breadcrumb/Breadcrumb";
 import Message from "components/Chat/Message/Message";
 import ChatInput from "components/Chat/Input/Input";
 import Handlers from "components/Chat/Handlers/Handlers";
-import Result from "components/Result/Result";
 import useAxios from "hooks/useAxios";
 import { useApp } from "context/AppContext";
 import linkedAiValuePPT from "../assets/ppts/linked_ai_value.pptx";
 // import { valueAreas } from "JSONs/valueAreas"
 
 const LinkedAIValue = () => {
-  const {
-    LinkedAIArea,
-    handleResultValues,
-    defaultRecommendedSuggestions,
-  } = useApp();
-
-  const {postCall} = useAxios()
+  const { defaultRecommendedSuggestions, getPreviousPath, handleDefaultSuggestions } = useApp();
+  const navigate = useNavigate()
+  const {postCall, getCall} = useAxios()
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuggestionDisable, setIsSuggestionDisable] = useState(false);
   const [selectedSuggestions, setSelectedSuggestions] = useState([]);
   const [respondedSuggestion, setRespondedSuggestions] = useState(0)
   const [recommendedSuggestions, setRecommendedSuggestions] = useState(
@@ -30,7 +27,6 @@ const LinkedAIValue = () => {
   );
   const [allRecommendedResponded, setAllRecommendedResponded] = useState(false);
   const [showInput, setShowInput] = useState(true);
-  const [showResult, setShowResult] = useState(false);
   // const [ opportunitiesArea, setOpportunitiesArea ] = useState([])
   const messagesEndRef = useRef(null);
 
@@ -88,12 +84,16 @@ const LinkedAIValue = () => {
   };
 
   const fetchResults = async() => {
+    const userId = localStorage.getItem("userid");
+    if(userId === null || userId === undefined || userId === "" ){
+      navigate("/")
+    }
     if(allRecommendedResponded){
       const userMessage = messages.filter((item) => !item.isBot);
-      const result = await postCall("save-suggestions", {"message": userMessage});
+      const result = await postCall("save-suggestions", {"message": userMessage}, {'user-id': userId});
       if(result.success){
-        handleResultValues(result.data);
-        setShowResult(true)
+        // setShowResult(true)
+        navigate("/opportunities")
       } else {
         toast.warn(`${result.error}`)
       }
@@ -105,7 +105,6 @@ const LinkedAIValue = () => {
   useEffect(() => {
     if (selectedSuggestions.length) {
       setIsLoading(true);
-
       // Simulate bot response with a realistic delay
       const responseDelay = Math.random() * (3000 - 1500) + 1500;
       setTimeout(() => {
@@ -123,7 +122,7 @@ const LinkedAIValue = () => {
         ]);
       }, responseDelay);
     }
-  }, [selectedSuggestions.length]);
+  }, [selectedSuggestions, selectedSuggestions.length]);
 
   useEffect(() => {
     const allRecommendedSelected =
@@ -148,11 +147,35 @@ const LinkedAIValue = () => {
     setRecommendedSuggestions(defaultRecommendedSuggestions);
   }, [defaultRecommendedSuggestions]);
 
+  useEffect(()=>{
+    if(messages.length===0 || !messages[messages.length - 1 ].isBot){
+      setIsSuggestionDisable(false)
+      return
+    }
+    setIsSuggestionDisable(true)
+  },[messages])
+
+  useEffect(()=>{
+    const userId = localStorage.getItem("userid");
+    if(userId === null || userId === undefined || userId === "" ){
+      navigate("/")
+    }
+    getCall("fetch-value-areas", {'user-id': userId}).then((result)=>{
+      if(result.success){
+        if(!result.data.length){
+          getPreviousPath()
+        }
+        handleDefaultSuggestions(result.data)
+      }
+    })
+    // eslint-disable-next-line
+  },[])
+
   return (
     <>
       <Breadcrumb pageName="Linked AI Value" ppt={linkedAiValuePPT} />
 
-      {!showResult ? <div className="flex flex-col h-screen bg-white p-4">
+      <div className="flex flex-col h-screen bg-white p-4">
         <div className="bg-gray-800 pb-4 border-b border-gray-700">
           <h2 className="text-primary text-xl font-bold">
             Optimize Your Results
@@ -167,6 +190,7 @@ const LinkedAIValue = () => {
           </p>
           <Suggestions
             setSelectedMsg={setSelectedSuggestions}
+            disable={isLoading || isSuggestionDisable}
           />
         </div>
 
@@ -190,7 +214,7 @@ const LinkedAIValue = () => {
             />
           )}
         </div>
-      </div> : <Result step={1} resultValues={LinkedAIArea}/>}
+      </div>
     </>
   );
 };

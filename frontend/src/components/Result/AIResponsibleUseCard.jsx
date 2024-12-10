@@ -1,21 +1,32 @@
 import React from "react";
-import { Calendar, Eye, Shield, Sliders, AlertTriangle , LayoutGrid, ChevronsLeftRightEllipsis} from 'lucide-react';
+import { Calendar, Eye, Shield, Sliders, AlertTriangle , LayoutGrid, ChevronsLeftRightEllipsis, Pencil } from 'lucide-react';
 
-function AIResponsibleUseCard({ currentArea }) {
+function AIResponsibleUseCard({ currentArea, handleEditModal}) {
   const riskColor = (rating) => {
     const colors = [
-      "bg-green-500",
-      "bg-yellow-400",
-      "bg-warm-red",
-      "bg-red-500",
-      "bg-red-700",
+      "bg-green-500 text-white",
+      "bg-yellow-400 text-black",
+      "bg-warm-red text-white",
+      "bg-red-500 text-white",
+      "bg-red-700 text-white",
     ];
-    return colors[rating - 1] || "bg-gray-500";
+    return colors[rating - 1] || "text-black bg-gray-500";
   };
+
+  const getDataSenstivityColor = (sensitivity) => {
+    if ((sensitivity.includes('Protected')) ||  (sensitivity.includes('Highly Protected'))) {
+      return 'bg-green-500 text-white'
+    };
+    if (sensitivity.includes('Internal')) {
+      return 'bg-yellow-400 text-black'
+    };
+    return 'bg-red-500 text-white';
+  };
+
   return (
     <div className={`mb-6 rounded-xl shadow-lg overflow-hidden relative`}>
       {/* Header */}
-      <div className="p-4 bg-primary">
+      <div className="p-4 bg-primary flex items-center justify-between">
         <div className="flex items-center">
           <div className="w-12 h-12 bg-light-gray bg-opacity-20 rounded-full flex items-center justify-center mr-4">
             {/* <IconComponent className="w-6 h-6 text-light-gray" /> */}
@@ -27,6 +38,10 @@ function AIResponsibleUseCard({ currentArea }) {
             {currentArea.name}
           </h2>
         </div>
+        <div className="flex items-center text-white">
+          <Pencil className="cursor-pointer" onClick={()=>handleEditModal(currentArea)} /> ̰
+        </div>
+        
       </div>
 
       {/* Body */}
@@ -40,7 +55,7 @@ function AIResponsibleUseCard({ currentArea }) {
               {/* {currentArea.applicationTypes.map((type) => ( */}
               <span
                 key={currentArea.applicationTypes}
-                className="px-2 py-1 bg-warm-red text-light-gray rounded-full text-xs"
+                className="px-2 py-1 bg-primary text-light-gray rounded-full text-xs"
               >
                 {currentArea.applicationTypes}
               </span>
@@ -60,14 +75,28 @@ function AIResponsibleUseCard({ currentArea }) {
             <h4 className="text-sm font-semibold text-dusky-teal mb-2">
               Risk Rating:
             </h4>
-            <span
-              className={`px-2 py-1 rounded-full text-xs text-light-gray ${riskColor(
-                currentArea.riskRating
-              )}`}
-            >
-              <AlertTriangle className="w-3 h-3 inline mr-1" />
-              {currentArea.riskRating} / 5
-            </span>
+            {Array.isArray(currentArea.riskRating) ? 
+              currentArea.riskRating.map((rating, index)=>(
+                <span
+                  key={`index_${index}_${rating}`}
+                  className={`px-2 py-1 mx-1 rounded-full text-xs ${riskColor(
+                    rating
+                  )}`}
+                >
+                  <AlertTriangle className="w-3 h-3 inline mr-1" />
+                  {rating} / 5
+                </span>
+              ))
+              :
+              <span
+                className={`px-2 py-1 rounded-full text-xs ${riskColor(
+                  currentArea.riskRating
+                )}`}
+              >
+                <AlertTriangle className="w-3 h-3 inline mr-1" />
+                {currentArea.riskRating} / 5
+              </span>
+            }
           </div>
         </div>
 
@@ -85,7 +114,9 @@ function AIResponsibleUseCard({ currentArea }) {
             <h4 className="text-sm font-semibold text-dusky-teal mb-2">
               Data Sensitivity:
             </h4>
-            <span className="px-2 py-1 bg-primary text-light-gray rounded-full text-xs">
+            <span className={`px-2 py-1 rounded-full text-xs ${getDataSenstivityColor(
+                  currentArea.dataSensitivity
+                )}`}>
               <Shield className="w-3 h-3 inline mr-1" />
               {currentArea.dataSensitivity}
             </span>

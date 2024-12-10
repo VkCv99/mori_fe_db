@@ -1,18 +1,24 @@
 import io
 import os
 import json
-from typing import Dict, Tuple
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Header
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, validator
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union, Optional, Tuple, Any
 from pptx import Presentation
-from pptx.util import Inches, Pt
-from pptx.chart.data import CategoryChartData
-from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION, XL_DATA_LABEL_POSITION
-from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
-from pptx.dml.color import RGBColor
+from signup import create_dummy_input_data, create_dummy_output_data
+from ppt import create_slide
+from database.connection import Database
+from models.user_model import UserModel
+from models.input_model import InputModel
+from models.output_model import OutputModel
+from models.gpt_output_model import GptOutputModel
+from models.default_value_model import DefaultValueModel
+from bson import ObjectId
+from datetime import datetime
+from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
 
 app = FastAPI()
 
@@ -23,6 +29,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+Database.initialize()
+user_model = UserModel()
+input_model = InputModel()
+output_model = OutputModel()
+gpt_output_model = GptOutputModel()
+default_value_model = DefaultValueModel()
+
+load_dotenv()
+IS_DUMMY = os.getenv("IS_DUMMY")
 
 # ContentValueType = Union[str, List[str], List[Dict[str, Union[str, int]]]]
 ContentValueType = Union[str, List[str], List[List[Union[str, int]]], List[Dict[str, Union[str, int]]]]
@@ -41,208 +57,19 @@ class SlideData(BaseModel):
 class PresentationData(BaseModel):
     slides: List[SlideData]
 
+class UserLogin(BaseModel):
+    email: str
+    password: str
 
-def text_fits(text_frame, max_size):
-    """
-    Check if the text fits within the text frame.
-    This is an approximation and may not be 100% accurate in all cases.
-    """
-    if not text_frame.text:
-        return True
-
-    text_frame.fit_text(font_family='Arial', max_size=max_size, bold=False, italic=False)
-    for paragraph in text_frame.paragraphs:
-        for run in paragraph.runs:
-            if run.font.size < 6:  # If font size is too small, consider it doesn't fit
-                return False
-    return True
-
-def fit_text(text_frame, text_type='normal'):
-    """
-    Fit text into the text frame by adjusting size and applying wrapping.
-    
-    :param text_frame: The text frame to fit text into
-    :param text_type: Type of text ('title', 'subtitle', or 'normal')
-    """
-    if text_type == 'title':
-        max_size, min_size = 24, 20
-    elif text_type == 'subtitle':
-        max_size, min_size = 14, 12
-    else:  # normal text
-        max_size, min_size = 11, 9
-
-    text_frame.word_wrap = True
-    text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-    
-    # Start with the maximum size
-    size = max_size
-    for paragraph in text_frame.paragraphs:
-        paragraph.font.size = Pt(size)
-
-    while not text_fits(text_frame, size) and size > min_size:
-        size = max(size * 0.9, min_size)  # Reduce by 10% each iteration
-        for paragraph in text_frame.paragraphs:
-            paragraph.font.size = size
-
-    # If still doesn't fit, try to wrap (for titles and subtitles)
-    if not text_fits(text_frame, size) and text_type in ['title', 'subtitle']:
-        words = text_frame.text.split()
-        mid = len(words) // 2
-        text_frame.text = ' '.join(words[:mid]) + '\n' + ' '.join(words[mid:])
-        
-        # Readjust size after wrapping
-        while not text_fits(text_frame, size) and size > min_size:
-            size = max(size * 0.9, min_size)
-            for paragraph in text_frame.paragraphs:
-                paragraph.font.size = size
-
-    # For normal text, if it still doesn't fit, truncate with ellipsis
-    if not text_fits(text_frame, size) and text_type == 'normal':
-        while not text_fits(text_frame, size) and len(text_frame.text) > 3:
-            text_frame.text = text_frame.text[:-4] + '...'
-
-    return Pt(size)
-
-def create_slide(prs:Presentation, slide_data:SlideData):
-    slide = prs.slides.add_slide(prs.slide_layouts[1])
-    
-    # Title
-    title = slide.shapes.title
-    title.text = slide_data.title
-    fit_text(title.text_frame, 'title')
-
-    content_top = Inches(1.5)
-    for item in slide_data.content:
-        if item.type == 'text':
-            left, width, height = Inches(0.5), Inches(9), Inches(0.5)
-            tf = slide.shapes.add_textbox(left, content_top, width, height).text_frame
-            tf.text = item.value
-            fit_text(tf, 'normal')
-            tf.paragraphs[0].alignment = PP_ALIGN.LEFT
-            content_top += height + Inches(0.1)
-
-        elif item.type == 'bullet':
-            shapes = slide.shapes
-            body_shape = shapes.placeholders[1]
-            tf = body_shape.text_frame
-            tf.text = item.value[0]
-            for bullet in item.value[1:]:
-                p = tf.add_paragraph()
-                p.text = bullet
-                p.level = 1
-            fit_text(tf, 'normal')
-            content_top = Inches(5.5)  # Move to bottom half of slide
-
-        elif item.type == 'graph':
-            if item.graphType == 'bar':
-                add_chart(slide, item.data, XL_CHART_TYPE.COLUMN_CLUSTERED)
-            elif item.graphType == 'pie':
-                add_chart(slide, item.data, XL_CHART_TYPE.PIE)
-            content_top = Inches(15)  # Move to bottom half of slide
-        elif item.type == 'table':
-            headers = item.headers
-            data = item.data
-            rows, cols = len(data) + 1, len(headers)  # +1 for header row
-            left, top, width, height = Inches(0.5), content_top, Inches(9), Inches(0.5 * rows)
-            table = slide.shapes.add_table(rows, cols, left, top, width, height).table
-            
-            # Populate the header row
-            for col, header in enumerate(headers):
-                cell = table.cell(0, col)
-                cell.text = str(header)
-                cell.fill.solid()
-                cell.fill.fore_color.rgb = RGBColor(200, 200, 200)
-                cell.text_frame.paragraphs[0].font.bold = True
-                cell.text_frame.paragraphs[0].font.size = Pt(10)
-            
-            # Populate the data rows
-            for row, row_data in enumerate(data, start=1):
-                for col, cell_data in enumerate(row_data):
-                    cell = table.cell(row, col)
-                    cell.text = str(cell_data)
-                    cell.text_frame.paragraphs[0].font.size = Pt(10)
-
-
-            content_top += height + Inches(0.1)
-
-def add_chart(slide, data, chart_type):
-    chart_data = CategoryChartData()
-    chart_data.categories = [item['name'] for item in data]
-    chart_data.add_series('Series 1', [item['value'] for item in data])
-
-    # Adjust chart size and position
-    x, y = Inches(2.5), Inches(3)
-    cx, cy = Inches(5), Inches(2.5)  # Reduced size
-    chart = slide.shapes.add_chart(
-        chart_type, x, y, cx, cy, chart_data
-    ).chart
-
-    chart.has_legend = True
-    chart.legend.include_in_layout = False
-    chart.legend.position = XL_LEGEND_POSITION.BOTTOM
-    chart.legend.font.size = Pt(8)  # Adjust legend font size
-
-    # Adjust font sizes and other chart properties
-    if chart.chart_title:
-        chart.chart_title.text_frame.text = "Chart Title"  # You can customize this
-        chart.chart_title.text_frame.paragraphs[0].font.size = Pt(14)
-
-    # Adjust series data labels
-    for series in chart.series:
-        if hasattr(series, 'data_labels'):
-            series.data_labels.font.size = Pt(8)
-            if chart_type != XL_CHART_TYPE.PIE:
-                series.data_labels.position = XL_DATA_LABEL_POSITION.CENTER
-
-    # Adjust axes based on chart type
-    if chart_type != XL_CHART_TYPE.PIE:
-        # For charts with category and value axes
-        if hasattr(chart, 'category_axis') and hasattr(chart.category_axis, 'tick_labels'):
-            chart.category_axis.tick_labels.font.size = Pt(8)
-        
-        if hasattr(chart, 'value_axis') and hasattr(chart.value_axis, 'tick_labels'):
-            chart.value_axis.tick_labels.font.size = Pt(8)
-            
-    else:
-        # For pie charts
-        chart.plots[0].has_data_labels = True
-        data_labels = chart.plots[0].data_labels
-        data_labels.font.size = Pt(8)
-        data_labels.position = XL_DATA_LABEL_POSITION.CENTER
-
-    # Additional formatting
-    plot = chart.plots[0]
-    plot.has_data_labels = True
-    if hasattr(plot, 'data_labels'):
-        plot.data_labels.font.size = Pt(8)
-        plot.data_labels.font.color.rgb = RGBColor(0, 0, 0)  # Black color
-
-# Function 1: Save data to a JSON file
-def save_to_json(path: str, filename: str, data: dict):
-    full_path = os.path.join(path, filename)
-    try:
-        os.makedirs(os.path.dirname(full_path), exist_ok=True)
-        with open(full_path, 'w') as file:
-            json.dump(data, file, indent=2)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
-
-# Function 2: Read data from a JSON file
-def read_from_json(path: str, filename: str) -> Tuple[Dict, int, str]:
-    full_path = os.path.join(path, filename)
-    try:
-        with open(full_path, 'r') as file:
-            return json.load(file), 200, ""
-    except FileNotFoundError:
-        return {}, 404, "File not found"
-    except json.JSONDecodeError:
-        return {}, 400, "Invalid JSON file"
-    except Exception as e:
-        return {}, 500, f"Error reading file: {str(e)}"
+class UserSignUp(BaseModel):
+    email: str
+    password: str
+    name:str
 
 def filter_slides(slides, selected_cards):
     if not selected_cards:
         return {"slides": slides}
+
     filtered_slides = []
 
     for slide in slides:
@@ -270,12 +97,13 @@ def filter_slides(slides, selected_cards):
 
 def convert_ai_use_json_list(input_list):
     converted_list = []
-    
+    id = 1
     for input_json in input_list:
         # Extract risks dictionary for easier access
         risks = input_json.get('risks', {})
-        
+
         converted_json = {
+            "id": id,
             "name": input_json.get('value_area_name'),
             "applicationTypes": input_json.get('category_name'),
             "horizon": input_json.get('ai_use_class')+ " " +input_json.get('horizonClassification'),
@@ -290,101 +118,257 @@ def convert_ai_use_json_list(input_list):
         }
         
         converted_list.append(converted_json)
+        id = id+1
     return converted_list
 
 def extract_applications(data):
     applications = []
-    for key, value in data.items():
-        applications.extend(value['applications'])
+    id_counter = 1  # Initialize the counter
+
+    for key, value in data.items():  # Changed from item() to items() to fix syntax
+        for application in value['applications']:
+            application['id'] = id_counter  # Add the incremental id
+            applications.append(application)  # Use append instead of extend
+            id_counter += 1  # Increment the counter for the next application
+
     return applications
+
+def transform_tech_reasoning_json(user_id):
+
+    output = output_model.find({"userId": user_id})
+    default_values = default_value_model.find({})
+    question_data = default_values["techQuadQuestion"]
+
+    if not output or not output.get("techQuad"):
+        raise HTTPException(status_code=400, detail="Tech quad data is not found")
+
+    tech_quad = output.get("techQuad")
+    
+    if tech_quad is None:
+        return
+
+    transformed_data = []
+    
+    for _, item in tech_quad.items():
+        transformed_item = {
+            "title": f"{item['new_app_name']} - {item['category_name']}",
+            "description": item['description'] if 'description' in item else '',
+            "defaultInfo": [
+                {
+                    "icon": "🧹",
+                    "title": "Linked AI Value",
+                    "options": [
+                        {"value": item['value_area_name'], "selected": True}
+                    ]
+                },
+                {
+                    "icon": "📊",
+                    "title": "AI Responsiible Use",
+                    "options": [
+                        {"value": "Everyday use", "selected": item['ai_use_class'] == "Everyday use"},
+                        {"value": "Augmentation", "selected": item['ai_use_class'] == "Augmentation"},
+                        {"value": "Transformation", "selected": item['ai_use_class'] == "Transformation"}
+                    ]
+                },
+                {
+                    "icon": "🔒",
+                    "title": "Quadrant Mapping",
+                    "options": [
+                        {"value": "Quadrant-1", "selected": item['ai_enablement_quadrant'] == "Quadrant 1"},
+                        {"value": "Quadrant-2", "selected": item['ai_enablement_quadrant'] == "Quadrant 2"},
+                        {"value": "Quadrant-3", "selected": item['ai_enablement_quadrant'] == "Quadrant 3"},
+                        {"value": "Quadrant-4", "selected": item['ai_enablement_quadrant'] == "Quadrant 4"}
+                    ]
+                }
+            ],
+            "quadrant_reasoning": item['quadrant_reasoning'] if 'quadrant_reasoning' in item else '',
+            "questions":question_data
+        }
+        transformed_data.append(transformed_item)
+
+    output_model.update({"userId": user_id}, { "techEnablement": transformed_data})
+
+    return  transformed_data
+
 
 # Pydantic model for request body
 class DataModel(BaseModel):
     data: dict
+
+class UserLoginData(BaseModel):
+    email: str
+    password: str
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
 
 class DataModelList(BaseModel):
     data: list
 
 class GeneratePPTRequest(BaseModel):
     type: str  
-    selected_cards: List[str] 
+    selected_cards: List[dict] 
 
 @app.post("/save-business-context")
-async def save_business_context(data: DataModel):
-    save_to_json("./jsons/input/", "business_context.json", data.data)
-    suggestion_output, status_code, error_message = read_from_json("./jsons/output/", "suggestion_output.json")
-    if status_code != 200:
-        raise HTTPException(status_code=status_code, detail=error_message)
-    return suggestion_output
+async def save_business_context(data: dict, User_id: str = Header(...)):
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
+    
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
+
+    insertedResult = input_model.update({"userId": User_id}, {"businessContext": data})
+    if insertedResult:
+        data = {"message": "Operation successful", "data": []}
+        return JSONResponse(content=data, status_code=200)
+
+    raise HTTPException(status_code=500, detail="There is some error while processing your request please try agaion later")
+
+@app.get("/fetch-value-areas")
+async def fetch_value_areas(User_id: str = Header(...)):
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
+    
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
+    
+    output = output_model.find({"userId": User_id})
+
+    if output and output['suggestionOutput']:
+        return output["suggestionOutput"]
+
+    raise HTTPException(status_code=500, detail="There is some error while processing your request please try agaion later")
 
 @app.post("/save-suggestions")
-async def save_suggestions(data: DataModel):
-    save_to_json("./jsons/input/", "suggestion_input.json", data.data)
+async def save_suggestions(data: dict, User_id: str = Header(...)):
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
     
-    opportunities, opp_status, opp_error = read_from_json("./jsons/output/", "opportunities.json")
-    ai_use, ai_status, ai_error = read_from_json("./jsons/output/", "ai_use.json")
-    tech_enablement, tech_status, tech_error = read_from_json("./jsons/output/", "tech_enablement_values.json")
-    
-    if opp_status != 200:
-        raise HTTPException(status_code=opp_status, detail=opp_error)
-    if ai_status != 200:
-        raise HTTPException(status_code=ai_status, detail=ai_error)
-    if tech_status != 200:
-        raise HTTPException(status_code=tech_status, detail=tech_error)
-    
-    return {
-        "opportunities": opportunities,
-        "ai_responsible_use": ai_use,
-        "tech_enablement": tech_enablement
-    }
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
 
-@app.get("/fetch-ai-use")
-async def fetch_ai_use():
-    ai_use, ai_status, ai_error = read_from_json("./jsons/output/", "ai_use_gpt_output.json")
-    result = convert_ai_use_json_list(ai_use["applications"])
-    return result
+    result = input_model.update({"userId": User_id}, {"suggestionInput": data})
 
+    data = {"message": "Operation successful", "data": []}
+    return JSONResponse(content=data, status_code=200)
+
+@app.get("/fetch-opportunities")
+async def fetch_opportunities(User_id: str = Header(...)):
+
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
+    
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
+
+    output = output_model.find({"userId": User_id})
+
+    if output and output['opportunities']:
+        return output["opportunities"]
+    
+    raise HTTPException(status_code=500, detail="There is some error while processing your request please try agaion later")
+    
 @app.get("/fetch-ai-strategy")
-async def fetch_ai_strategy():
-    ai_use, ai_status, ai_error = read_from_json("./jsons/output/", "ai_strategy_output.json")
-    application_list = extract_applications(ai_use)
-    return application_list
+async def fetch_ai_strategy(User_id: str = Header(...)):
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
+    
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
+
+    output = output_model.find({"userId": User_id})
+
+    if output and output['aiApplication']:
+        application_list = extract_applications(output["aiApplication"])
+        return application_list
+    
+    raise HTTPException(status_code=500, detail="There is some error while processing your request please try agaion later")
 
 @app.post("/save-ai-strategy")
-async def save_business_context(data: DataModelList):
-    save_to_json("./jsons/input/", "ai_strategy_input.json", data.data)
-    ai_use, ai_status, ai_error = read_from_json("./jsons/output/", "ai_use.json")
-    if ai_status != 200:
-        raise HTTPException(status_code=ai_status, detail=error_message)
-    return ai_use
+async def save_ai_strategy(data: List[Dict[str, Any]], User_id: str = Header(...)):
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
+    
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
+
+    insertedResult = input_model.update({"userId": User_id}, {"aiApplication": data})
+
+    if insertedResult:
+        result = {"message": "Operation successful", "data": []}
+        return JSONResponse(content=result, status_code=200)
+    raise HTTPException(status_code=500, detail="There is some error while processing your request please try agaion later")
+
+@app.get("/fetch-ai-use")
+async def fetch_ai_use(User_id: str = Header(...)):
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
+    
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
+    
+    output = output_model.find({"userId": User_id})
+
+    if output and output['aiUse']:
+        result = convert_ai_use_json_list(output["aiUse"]["applications"])
+        return result
+    
+    raise HTTPException(status_code=500, detail="There is some error while processing your request please try agaion later")
+    
+@app.post("/save-edited-ai-use")
+async def fetch_ai_use(data: dict, User_id: str = Header(...)):
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
+    
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
+    
+    insertedResult = input_model.update({"userId": User_id}, {"editedAiUse": data})
+
+    if insertedResult:
+        result = {"message": "Operation successful", "data": []}
+        return JSONResponse(content=result, status_code=200)
+
+    raise HTTPException(status_code=500, detail="There is some error while processing your request please try agaion later")
+
+@app.get("/fetch-tech-reasoning")
+async def fetch_tech_reasoning(User_id: str = Header(...)):
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
+
+    transformed_data = transform_tech_reasoning_json(User_id)
+
+    return transformed_data
 
 @app.post("/save-tech-reasoning")
-async def save_business_context(data: DataModel):
-    save_to_json("./jsons/input/", "tech_reasoning.json", data.data)
-    suggestion_output, status_code, error_message = read_from_json("./jsons/output/", "result.json")
-    if status_code != 200:
-        raise HTTPException(status_code=status_code, detail=error_message)
-    return suggestion_output
+async def save_tech_reasoning(data: dict, User_id: str = Header(...)):
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
+
+    insertedResult = input_model.update({"userId": User_id}, {"techReasoning": data})
+    if insertedResult:  
+        output = output_model.find({"userId": User_id})
+        if output and output['result']:
+            return output['result']
+        raise HTTPException(status_code=500, detail="There is some error while processing your request please try agaion later")
+    raise HTTPException(status_code=500, detail="There is some error while processing your request please try agaion later")
 
 @app.post("/generate-ppt")
-async def generate_ppt(request: GeneratePPTRequest):
-    # json_data, status_code, error_message = read_from_json("./jsons/output/", "short_table.json")
-    if request.type.lower() not in ["short", "comprehensive"]:
+async def generate_ppt(request: GeneratePPTRequest, User_id: str = Header(...)):
+
+    print(f"request.type: '{request.type}'")
+    user_check_result = user_model.find({"_id":ObjectId(User_id)})
+    if user_check_result is None:
+        raise HTTPException(status_code=403, detail="User not found")
+
+    if request.type.strip().lower() not in ['short', 'comprehensive']:
         raise HTTPException(status_code=400, detail="Invalid type. Use 'short' or 'comprehensive'.")
     
     json_file = "short_table.json" if request.type == "short" else "table.json"
     filename = "short_presentation.pptx" if request.type == "short" else "presentation.pptx"
 
-    json_data, status_code, error_message = read_from_json("./jsons/output/", json_file)
+    insertedResult = input_model.update({"userId": User_id}, {"finalSelectedResult": request.selected_cards})
+    if insertedResult:
+        output = gpt_output_modal.find({"userId":User_id})
+        json_data = output["finalResult"]
 
-    # Filter slides
-    filtered_json_data = filter_slides(json_data.get("slides", []), request.selected_cards)
-
-    if status_code != 200:
-        raise HTTPException(status_code=status_code, detail=error_message)
-    
     try:
-        presentation_data = PresentationData(**filtered_json_data)
+        presentation_data = PresentationData(**json_data)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=f"Invalid JSON structure: {str(e)}")
 
@@ -401,6 +385,57 @@ async def generate_ppt(request: GeneratePPTRequest):
         media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
+@app.post("/login")
+def login(data: UserLogin):
+    user = user_model.find({"email": data.email})
+    if user and user['password'] == data.password: 
+        return {
+            "message": "Login successful", 
+            "data": {
+                    "id": str(user["_id"]),
+                    "email": user["email"],
+                    "name": user["username"]
+                }
+            }
+    raise HTTPException(status_code=400, detail="Invalid email or password")
+
+@app.post("/signup")
+async def signup(data: UserSignUp):
+    query = {
+        '$or': [
+            { "username": data.name },
+            { "email": data.email }
+        ]
+    }
+    user = user_model.find(query)
+
+    if user:
+        raise HTTPException(status_code=400, detail="User with this email or username already exists")
+    
+    new_user = {
+        "username": data.name,
+        "email": data.email,
+        "password": data.password  # Note: In production, hash the password!
+    }
+    insertedUser = user_model.create(new_user)
+    if insertedUser and insertedUser.get("_id"):
+        if(IS_DUMMY == 'true'):
+            input_data = create_dummy_input_data(str(insertedUser["_id"]))
+            insertedInput = input_model.create(input_data)
+            if insertedInput and  insertedInput.get("_id"):
+                output_data = create_dummy_output_data(str(insertedUser["_id"]), str(insertedInput["_id"]))
+                insertedOutput = output_model.create(output_data)
+                inserted_gpt_Output = gpt_output_model.create({"userId":str(insertedUser["_id"]), "inputId": str(insertedInput["_id"])})
+                return {"message": "User created successfully", "data": {"id":str(insertedUser["_id"]), "name":insertedUser["username"], "email":insertedUser["email"]}}
+        else:
+                insertedInput = input_model.create({"userId":str(insertedUser["_id"])})
+                if insertedInput and  insertedInput.get("_id"):
+                    insertedOutput = output_model.create({"userId":str(insertedUser["_id"]), "inputId": str(insertedInput["_id"])})
+                    inserted_gpt_Output = gpt_output_model.create({"userId":str(insertedUser["_id"]), "inputId": str(insertedInput["_id"])})
+                    return {"message": "User created successfully", "data": {"id":str(insertedUser["_id"]), "name":insertedUser["username"], "email":insertedUser["email"]}}
+    raise HTTPException(status_code=500, detail="There is some error while processing your request please try agaion later")
+
 
 @app.get("/")
 async def read_root():

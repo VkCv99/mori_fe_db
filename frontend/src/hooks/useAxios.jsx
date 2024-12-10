@@ -16,7 +16,7 @@ const useAxios = () => {
             });
             return { success: true, data: response.data };
         } catch (err) {
-            return { success: false, error: err.message || 'Error occurred' };
+            return { success: false, error: err.response.data.detail || err.response.data.message || 'Error occurred' };
         } finally {
             setLoading(false);
         }
@@ -25,11 +25,15 @@ const useAxios = () => {
 
     const postCall = async (path, body = {}, headers = {}) => {
         setLoading(true);
+
         try {
-            const response = await axios.post(baseUrl+path, {"data":body}, { headers });
+            const config = {
+                headers: headers
+              };
+              const response = await axios.post(baseUrl + path, body, config);
             return { success: true, data: response.data };
         } catch (err) {
-            return { success: false, error: err.message || 'Error occurred' };
+            return { success: false, error: err.response.data.detail || err.response.data.message || 'Error occurred' };
         } finally {
             setLoading(false);
         }

@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
-import { ToastContainer } from 'react-toastify';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+// import { ToastContainer } from 'react-toastify';
 import Header from 'components/Header/Index';
 import Sidebar from 'components/SideBar/Index';
 
-
-
 const DefaultLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
+  useEffect(()=>{
+    const userId = localStorage.getItem("userid");
+    if(userId === null || userId === undefined || userId === "" ){
+      navigate("/")
+    }
+    // eslint-disable-next-line
+  },[])
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">
       {/* <!-- ===== Page Wrapper Start ===== --> */}
@@ -33,7 +40,7 @@ const DefaultLayout = ({ children }) => {
         {/* <!-- ===== Content Area End ===== --> */}
       </div>
       {/* <!-- ===== Page Wrapper End ===== --> */}
-      <ToastContainer />
+      {/* <ToastContainer /> */}
     </div>
   );
 };

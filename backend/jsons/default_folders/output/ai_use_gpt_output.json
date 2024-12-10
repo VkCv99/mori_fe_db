@@ -14,7 +14,7 @@
         "infoSensitivity": "Internal",
         "level_of_specialisation_interaction": "Process Augmentation : Expert in the Loop",
         "app_operation": "Internal or Non-material Applications",
-        "riskRating": 3,
+        "riskRating": [3, 2],
         "reasoning": "The application involves internal documents and requires expert oversight, leading to a moderate risk rating."
       }
     },

@@ -1,27 +1,35 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Create a context
 const AppContext = createContext();
 
 // Create a provider component
 export const AppProvider = ({ children }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [defaultSuggestions, setDefaultSuggestions] = useState([]);
   const [defaultRecommendedSuggestions, setDefaultRecommendedSuggestions] = useState([]);
-  const [LinkedAIArea, setLinkedAIArea] = useState([]);
-  const [responsibleAIArea, setResponsibelAIArea] = useState([]);
-  const [techEnableValues, setTechEnableValues] = useState([]);
-
+  const [userDetails, setUserDetails] = useState({});
+  const [FinalresultValues, setFinalResultValues] = useState([]);
 
   const handleDefaultSuggestions = (suggetions) => {
     setDefaultSuggestions(suggetions);
   };
 
-  const handleResultValues = (values) => {
-    setLinkedAIArea(values.opportunities);
-    setResponsibelAIArea(values.ai_responsible_use);
-    setTechEnableValues(values.tech_enablement)
-  }
+  const getPreviousPath = () => {
+    const path = location.pathname;
+    const pathMap = {
+        "/business-context": "/",
+        "/value-areas": "/business-context",
+        "/opportunities": "/value-areas",
+        "/ai-applications": "/opportunities",
+        "/ai-use": "/ai-applications",
+        "/ai-tech-enablement": "/ai-use",
+        "/final-result": "/ai-tech-enablement"
+    };
+    return navigate(pathMap[path] || "/");
+  };
 
   useEffect(()=>{
     const recommended = defaultSuggestions.filter(suggestion => suggestion.recommended);
@@ -29,13 +37,14 @@ export const AppProvider = ({ children }) => {
   },[defaultSuggestions]);
 
   const value = {
-    LinkedAIArea,
-    responsibleAIArea,
-    techEnableValues,
     defaultSuggestions,
     defaultRecommendedSuggestions,
     handleDefaultSuggestions,
-    handleResultValues,
+    userDetails,
+    setUserDetails,
+    FinalresultValues,
+    setFinalResultValues,
+    getPreviousPath
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
